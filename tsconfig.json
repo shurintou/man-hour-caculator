@@ -12,5 +12,8 @@
     "types": [
       "element-plus/global"
     ]
-  }
+  },
+  "include": [
+    "src/types/*.ts",
+  ]
 }
