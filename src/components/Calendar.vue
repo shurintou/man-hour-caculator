@@ -1,29 +1,31 @@
 <template>
   <el-calendar ref="calendar">
     <template #header="{ date }">
-      <span>Man Hour calculator</span>
       <span>{{ date }}</span>
       <el-button-group>
         <el-button size="small" @click="selectDate('prev-year')">
-          Previous Year
+          &lt;&lt;
         </el-button>
         <el-button size="small" @click="selectDate('prev-month')">
-          Previous Month
+          &lt;
         </el-button>
-        <el-button size="small" @click="selectDate('today')">Today</el-button>
         <el-button size="small" @click="selectDate('next-month')">
-          Next Month
+          &gt;
         </el-button>
         <el-button size="small" @click="selectDate('next-year')">
-          Next Year
+          &gt;&gt;
         </el-button>
       </el-button-group>
+    </template>
+    <template #date-cell="{ data }">
+      <DateButton :data="{ type: data.type, isSelected: data.isSelected, day: data.day, date: data.date }"></DateButton>
     </template>
   </el-calendar>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import DateButton from './DateButton.vue';
 import type { CalendarDateType, CalendarInstance } from 'element-plus'
 
 const calendar = ref<CalendarInstance>()
