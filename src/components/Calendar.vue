@@ -1,36 +1,23 @@
 <template>
-  <el-calendar ref="calendar">
-    <template #header="{ date }">
-      <span>{{ date }}</span>
-      <el-button-group>
-        <el-button size="small" @click="selectDate('prev-year')">
-          &lt;&lt;
-        </el-button>
-        <el-button size="small" @click="selectDate('prev-month')">
-          &lt;
-        </el-button>
-        <el-button size="small" @click="selectDate('next-month')">
-          &gt;
-        </el-button>
-        <el-button size="small" @click="selectDate('next-year')">
-          &gt;&gt;
-        </el-button>
-      </el-button-group>
+  <a-calendar v-model:value="value" :disabledDate="isDisabledMonth" class="custom-ant-calendar">
+    <template #dateFullCellRender="{ current }">
+      <DateButton :data="current" :is-current-month="!isDisabledMonth(current)"></DateButton>
     </template>
-    <template #date-cell="{ data }">
-      <DateButton :data="{ type: data.type, isSelected: data.isSelected, day: data.day, date: data.date }"></DateButton>
-    </template>
-  </el-calendar>
+  </a-calendar>
 </template>
-
 <script lang="ts" setup>
 import { ref } from 'vue'
-import DateButton from './DateButton.vue';
-import type { CalendarDateType, CalendarInstance } from 'element-plus'
+import dayjs, { Dayjs } from 'dayjs'
+import DateButton from '@/components/DateButton.vue'
+const value = ref<Dayjs>(dayjs())
+console.log(value.value.locale())
 
-const calendar = ref<CalendarInstance>()
-const selectDate = (val: CalendarDateType) => {
-  if (!calendar.value) return
-  calendar.value.selectDate(val)
-}
+const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== value.value?.month()
 </script>
+
+<style>
+.custom-ant-calendar .ant-picker-content {
+  /* to override the style of the header of the calendar. */
+  text-align: center;
+}
+</style>
