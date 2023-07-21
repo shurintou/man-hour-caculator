@@ -4,7 +4,7 @@
             <a-space warp size="middle">
                 <a-button shape="circle" :icon="h(DoubleLeftOutlined)" @click="addMonth(-12)" />
                 <a-button shape="circle" :icon="h(LeftOutlined)" @click="addMonth(-1)" />
-                <a-button shape="circle" :icon="h(EnvironmentOutlined)" @click="changeDate(dayjs())" />
+                <a-button type="primary" shape="circle" :icon="h(EnvironmentOutlined)" @click="changeDate(dayjs())" />
                 <a-button shape="circle" :icon="h(RightOutlined)" @click="addMonth(+1)" />
                 <a-button shape="circle" :icon="h(DoubleRightOutlined)" @click="addMonth(+12)" />
             </a-space>
