@@ -1,7 +1,10 @@
 <template>
-  <a-calendar v-model:value="value" :disabledDate="isDisabledMonth" class="custom-ant-calendar">
+  <a-calendar :value="date" :disabledDate="isDisabledMonth" class="custom-ant-calendar">
+    <template #headerRender="{ value }">
+      <CalendarHeader @change-date="changeDate" :currentDate="value"></CalendarHeader>
+    </template>
     <template #dateFullCellRender="{ current }">
-      <DateButton :data="current" :is-current-month="!isDisabledMonth(current)"></DateButton>
+      <DateButton @change-date="changeDate" :date="current" :is-current-month="!isDisabledMonth(current)"></DateButton>
     </template>
   </a-calendar>
 </template>
@@ -9,10 +12,14 @@
 import { ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import DateButton from '@/components/DateButton.vue'
-const value = ref<Dayjs>(dayjs())
-console.log(value.value.locale())
+import CalendarHeader from '@/components/CalendarHeader.vue'
+const date = ref<Dayjs>(dayjs())
 
-const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== value.value?.month()
+const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
+
+const changeDate = (newDate: Dayjs) => {
+  date.value = newDate
+}
 </script>
 
 <style>
