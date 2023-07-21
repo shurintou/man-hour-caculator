@@ -3,6 +3,7 @@
         <div class="ant-picker-calendar-date-value" style="font-size: large; font-weight: bold;"
             :style="{ 'color': dateColor }">
             {{ props.date.date() }}
+            <span v-if="isJapaneseHoliday">{{ japaneseHolidayName }}</span>
         </div>
         <div class="ant-picker-calendar-date-content"></div>
     </div>
@@ -11,6 +12,7 @@
 <script lang="ts" setup>
 import { Dayjs } from 'dayjs'
 import { computed } from 'vue'
+import { isHoliday, getHoliday } from '@/utils/holidays'
 const emit = defineEmits<{
     (e: 'changeDate', newDate: Dayjs): void
 }>()
@@ -20,10 +22,14 @@ const props = defineProps<{
     isCurrentMonth: boolean,
 }>()
 
+const japaneseHolidayName = computed(() => getHoliday(props.date.toDate())[0].name)
+
+const isJapaneseHoliday = computed(() => isHoliday(props.date.toDate()))
+
 const dateColor = computed(() => {
     const day = props.date.day()
     if (!props.isCurrentMonth) return ''
-    if (day === 0) return '#ff4d4f !important'
+    if (day === 0 || isJapaneseHoliday.value) return '#ff4d4f !important'
     if (day === 6) return '#1677ff !important'
     return ''
 })
