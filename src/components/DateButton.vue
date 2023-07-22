@@ -3,12 +3,16 @@
         <div class="ant-picker-calendar-date-value" style="font-size: large; font-weight: bold;"
             :style="{ 'color': dateColor }">
             <a-row>
-                <a-col :xs="{ span: 14 }" :sm="{ span: 8 }" :md="{ span: 4 }">
+                <a-col :xs="{ span: 0 }" :sm="{ span: 0 }" :md="{ span: 0 }" :lg="{ span: 6 }">
                     <a-badge v-if="props.isSelected" :number-style="{ backgroundColor: dateColor }"
                         :count="props.date.date()" />
                     <span v-else> {{ props.date.date() }}</span>
                 </a-col>
-                <a-col :xs="{ span: 0 }" :md="{ span: 20 }" v-if="isJapaneseHolidayGot" class="japanese-holiday-name-text">
+                <a-col :xs="{ span: 14 }" :sm="{ span: 8 }" :md="{ span: 4 }" :lg="{ span: 0 }">
+                    <span :style="{ textDecoration: props.isSelected ? 'underline' : '' }"> {{ props.date.date() }}</span>
+                </a-col>
+                <a-col :xs="{ span: 0 }" :md="{ span: 20 }" :lg="{ span: 18 }" v-if="isJapaneseHolidayGot"
+                    class="japanese-holiday-name-text">
                     <span>{{ japaneseHolidayName }}</span>
                 </a-col>
                 <a-col :xs="{ span: 10 }" :sm="{ span: 16 }" :md="{ span: 0 }" v-if="isJapaneseHolidayGot">
