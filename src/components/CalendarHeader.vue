@@ -25,7 +25,7 @@
 
 <script lang="ts" setup>
 import { h } from 'vue'
-import OperationBar from './OperationBar.vue';
+import OperationBar from './OperationBar.vue'
 import { LeftOutlined, RightOutlined, DoubleLeftOutlined, DoubleRightOutlined, EnvironmentOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 const props = defineProps<{
