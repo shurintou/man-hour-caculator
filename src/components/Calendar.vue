@@ -5,17 +5,20 @@
     </template>
     <template #dateFullCellRender="{ current }">
       <DateButton @change-date="changeDate" :date="current" :is-current-month="!isDisabledMonth(current)"
-        :is-selected="selectedDateList.some(old => old.isSame(current))"></DateButton>
+        :is-selected="dateStore.selectedDateList.some(old => old.isSame(current))"></DateButton>
     </template>
   </a-calendar>
 </template>
+
 <script lang="ts" setup>
 import { ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import DateButton from '@/components/DateButton.vue'
 import CalendarHeader from '@/components/CalendarHeader.vue'
+import { useDateStore } from '@/stores/date'
+
 const date = ref<Dayjs>(dayjs())
-const selectedDateList = ref<Dayjs[]>([])
+const dateStore = useDateStore()
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
 
@@ -24,12 +27,12 @@ const changeDate = (newDate: Dayjs) => {
 }
 
 const selectDate = (selectedDate: Dayjs) => {
-  const oldIndex = selectedDateList.value.findIndex(old => old.isSame(selectedDate))
+  const oldIndex = dateStore.selectedDateList.findIndex(old => old.isSame(selectedDate))
   if (oldIndex === -1) {
-    selectedDateList.value.push(selectedDate)
+    dateStore.$patch(state => state.selectedDateList.push(selectedDate))
   }
   else {
-    selectedDateList.value.splice(oldIndex, 1)
+    dateStore.$patch(state => state.selectedDateList.splice(oldIndex, 1))
   }
 }
 </script>
