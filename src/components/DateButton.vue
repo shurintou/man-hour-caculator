@@ -31,7 +31,14 @@ const props = defineProps<{
     isCurrentMonth: boolean,
 }>()
 
-const japaneseHolidayName = computed(() => isJapaneseHolidayGot.value?.name || '')
+const japaneseHolidayName = computed(() => {
+    let holidayName = isJapaneseHolidayGot.value?.name
+    if (holidayName) {
+        if (holidayName.indexOf("振替") !== -1) return "振替休日"
+        return holidayName
+    }
+    return ''
+})
 
 const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.date.toDate()))
 
