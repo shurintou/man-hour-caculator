@@ -48,8 +48,8 @@ const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.date.toDate(
 const dateColor = computed(() => {
     const day = props.date.day()
     if (!props.isCurrentMonth) return ''
-    if (day === 0 || isJapaneseHolidayGot.value) return '#ff4d4f !important'
-    if (day === 6) return '#1677ff !important'
+    if (day === 0 || isJapaneseHolidayGot.value) return '#ff4d4f'
+    if (day === 6) return '#1677ff'
     return '#000000'
 })
 
@@ -60,15 +60,6 @@ const changeDate = (newDate: Dayjs) => {
 </script>
 
 <style scoped>
-/* to override the style of the date button being selected. */
-.ant-picker-cell-selected .ant-picker-calendar-date {
-    background-color: #f6ffed !important;
-}
-
-.ant-picker-cell-selected .ant-picker-calendar-date .ant-picker-calendar-date-value {
-    color: #52c41a !important;
-}
-
 .japanese-holiday-name-text {
     text-align: left;
 }
