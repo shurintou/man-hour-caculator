@@ -6,10 +6,10 @@
                 <a-col :xs="{ span: 14 }" :sm="{ span: 8 }" :md="{ span: 4 }">
                     {{ props.date.date() }}
                 </a-col>
-                <a-col :xs="{ span: 0 }" :md="{ span: 20 }" v-if="isJapaneseHoliday" class="japanese-holiday-name-text">
+                <a-col :xs="{ span: 0 }" :md="{ span: 20 }" v-if="isJapaneseHolidayGot" class="japanese-holiday-name-text">
                     <span>{{ japaneseHolidayName }}</span>
                 </a-col>
-                <a-col :xs="{ span: 10 }" :sm="{ span: 16 }" :md="{ span: 0 }" v-if="isJapaneseHoliday">
+                <a-col :xs="{ span: 10 }" :sm="{ span: 16 }" :md="{ span: 0 }" v-if="isJapaneseHolidayGot">
                     <span>●</span><!-- to show a dot when at a short width device -->
                 </a-col>
             </a-row>
@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import { Dayjs } from 'dayjs'
 import { computed } from 'vue'
-import { isHoliday, getHoliday } from '@/utils/holidays'
+import { getJapenseHoliday } from '@/utils/holidays'
 const emit = defineEmits<{
     (e: 'changeDate', newDate: Dayjs): void
 }>()
@@ -31,14 +31,14 @@ const props = defineProps<{
     isCurrentMonth: boolean,
 }>()
 
-const japaneseHolidayName = computed(() => getHoliday(props.date.toDate()).name)
+const japaneseHolidayName = computed(() => isJapaneseHolidayGot.value?.name || '')
 
-const isJapaneseHoliday = computed(() => isHoliday(props.date.toDate()))
+const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.date.toDate()))
 
 const dateColor = computed(() => {
     const day = props.date.day()
     if (!props.isCurrentMonth) return ''
-    if (day === 0 || isJapaneseHoliday.value) return '#ff4d4f !important'
+    if (day === 0 || isJapaneseHolidayGot.value) return '#ff4d4f !important'
     if (day === 6) return '#1677ff !important'
     return ''
 })

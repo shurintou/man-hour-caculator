@@ -7,6 +7,4 @@ const format = (date: Date) => {
     return (year + '-' + month + '-' + day)
 }
 
-export const isHoliday = (date: Date) => holiday_jp.isHoliday(date)
-
-export const getHoliday = (date: Date) => holiday_jp.holidays[format(date)]
+export const getJapenseHoliday = (date: Date) => holiday_jp.holidays[format(date)]
