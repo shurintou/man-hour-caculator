@@ -4,7 +4,9 @@
             :style="{ 'color': dateColor }">
             <a-row>
                 <a-col :xs="{ span: 14 }" :sm="{ span: 8 }" :md="{ span: 4 }">
-                    {{ props.date.date() }}
+                    <a-badge v-if="props.isSelected" :number-style="{ backgroundColor: dateColor }"
+                        :count="props.date.date()" />
+                    <span v-else> {{ props.date.date() }}</span>
                 </a-col>
                 <a-col :xs="{ span: 0 }" :md="{ span: 20 }" v-if="isJapaneseHolidayGot" class="japanese-holiday-name-text">
                     <span>{{ japaneseHolidayName }}</span>
@@ -29,6 +31,7 @@ const emit = defineEmits<{
 const props = defineProps<{
     date: Dayjs,
     isCurrentMonth: boolean,
+    isSelected: boolean,
 }>()
 
 const japaneseHolidayName = computed(() => {
@@ -47,7 +50,7 @@ const dateColor = computed(() => {
     if (!props.isCurrentMonth) return ''
     if (day === 0 || isJapaneseHolidayGot.value) return '#ff4d4f !important'
     if (day === 6) return '#1677ff !important'
-    return ''
+    return '#000000'
 })
 
 const changeDate = (newDate: Dayjs) => {
