@@ -8,6 +8,9 @@
         :is-selected="dateStore.selectedDateList.some(old => old.isSame(current))"></DateButton>
     </template>
   </a-calendar>
+  <a-col :sm="{ span: 24 }" :md="{ span: 0 }">
+    <OperationBar :pc-render-mode="false"></OperationBar>
+  </a-col>
 </template>
 
 <script lang="ts" setup>
@@ -15,6 +18,7 @@ import { ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import DateButton from '@/components/DateButton.vue'
 import CalendarHeader from '@/components/CalendarHeader.vue'
+import OperationBar from './OperationBar.vue'
 import { useDateStore } from '@/stores/date'
 
 const date = ref<Dayjs>(dayjs())
