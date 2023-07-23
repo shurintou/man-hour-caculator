@@ -2,7 +2,7 @@
     <div>
         <a-row>
             <a-col :xs="{ span: 0 }" :sm="{ span: 0 }" :md="{ span: 14 }" :lg="{ span: 12 }">
-                <OperationBar :pcRenderMode="true"></OperationBar>
+                <OperationBar :pcRenderMode="true" :currentDate="currentDate"></OperationBar>
             </a-col>
             <a-col :xs="{ span: 24 }" :sm="{ span: 24 }" :md="{ span: 10 }" :lg="{ offset: 6, span: 6 }">
                 <a-space warp size="large">

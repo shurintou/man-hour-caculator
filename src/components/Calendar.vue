@@ -5,11 +5,11 @@
     </template>
     <template #dateFullCellRender="{ current }">
       <DateButton @change-date="changeDate" :date="current" :is-current-month="!isDisabledMonth(current)"
-        :is-selected="dateStore.selectedDateList.some(old => old.isSame(current))"></DateButton>
+        :isSelected="dateStore.selectedDateList.some(old => isSameDay(old, current))"></DateButton>
     </template>
   </a-calendar>
   <a-col :sm="{ span: 24 }" :md="{ span: 0 }">
-    <OperationBar :pc-render-mode="false"></OperationBar>
+    <OperationBar :pc-render-mode="false" :currentDate="date"></OperationBar>
   </a-col>
 </template>
 
@@ -19,6 +19,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import DateButton from '@/components/DateButton.vue'
 import CalendarHeader from '@/components/CalendarHeader.vue'
 import OperationBar from './OperationBar.vue'
+import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
 
 const date = ref<Dayjs>(dayjs())
@@ -31,7 +32,7 @@ const changeDate = (newDate: Dayjs) => {
 }
 
 const selectDate = (selectedDate: Dayjs) => {
-  const oldIndex = dateStore.selectedDateList.findIndex(old => old.isSame(selectedDate))
+  const oldIndex = dateStore.selectedDateList.findIndex(old => isSameDay(old, selectedDate))
   if (oldIndex === -1) {
     dateStore.$patch(state => state.selectedDateList.push(selectedDate))
   }

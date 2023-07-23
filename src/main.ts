@@ -1,7 +1,7 @@
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { Calendar, DatePicker, Space, Button, Row, Col, Badge } from 'ant-design-vue'
+import { Calendar, DatePicker, Space, Button, Row, Col, Badge, Dropdown, Menu } from 'ant-design-vue'
 import App from './App.vue'
 
 const app = createApp(App)
@@ -13,4 +13,6 @@ app.use(Button)
 app.use(Row)
 app.use(Col)
 app.use(Badge)
+app.use(Dropdown)
+app.use(Menu)
 app.mount('#app')
