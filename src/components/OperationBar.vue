@@ -18,19 +18,24 @@
             @click="dateStore.$reset()">
             <span v-if="props.pcRenderMode">Cancel</span>
         </a-button>
-        <a-button type="default" :icon="h(EditOutlined)" :disabled="!isCancelable">
+        <a-button type="default" :icon="h(EditOutlined)" :disabled="!isEditable" @click="changeEditModalVisible(true)">
             <span v-if="props.pcRenderMode">Edit</span>
         </a-button>
     </a-space>
+    <EditModal :isModalVisible="isEditModalVisible" @changeEditModalVisible="(flg: boolean) => changeEditModalVisible(flg)">
+    </EditModal>
 </template>
 
 
 <script lang="ts" setup>
-import { h, computed } from 'vue'
+import { h, computed, ref } from 'vue'
 import { PlusOutlined, CloseCircleOutlined, EditOutlined } from '@ant-design/icons-vue'
 import { Dayjs } from 'dayjs'
 import { getJapenseHoliday, isSameDay } from '@/utils/holidays'
+import EditModal from './EditModal.vue'
 import { useDateStore } from '@/stores/date'
+
+const isEditModalVisible = ref<boolean>(false)
 
 const props = defineProps<{
     pcRenderMode: boolean,
@@ -39,7 +44,11 @@ const props = defineProps<{
 
 const dateStore = useDateStore()
 
+const isEditable = computed(() => dateStore.$state.selectedDateList.length === 1)
+
 const isCancelable = computed(() => dateStore.$state.selectedDateList.length > 0)
+
+const changeEditModalVisible = (flg: boolean) => isEditModalVisible.value = flg
 
 const selectDate = (selectType: "work" | "all" | "holiday") => {
     const daysInCurrentMonth = props.currentDate.daysInMonth()
