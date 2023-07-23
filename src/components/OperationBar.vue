@@ -3,10 +3,11 @@
         <a-button type="primary" :icon="h(PlusOutlined)">
             <span v-if="props.pcRenderMode">Add</span>
         </a-button>
-        <a-button type="primary" danger :icon="h(CloseCircleOutlined)" :disabled="!isCancelable">
+        <a-button type="primary" danger :icon="h(CloseCircleOutlined)" :disabled="!isCancelable"
+            @click="dateStore.$reset()">
             <span v-if="props.pcRenderMode">Cancel</span>
         </a-button>
-        <a-button type="default" :icon="h(EditOutlined)">
+        <a-button type="default" :icon="h(EditOutlined)" :disabled="!isCancelable">
             <span v-if="props.pcRenderMode">Edit</span>
         </a-button>
     </a-space>
