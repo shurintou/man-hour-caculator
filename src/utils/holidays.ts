@@ -1,4 +1,5 @@
 import * as holiday_jp from '@holiday-jp/holiday_jp'
+import { Dayjs } from 'dayjs'
 
 const format = (date: Date) => {
     var year = date.getFullYear()
@@ -8,3 +9,5 @@ const format = (date: Date) => {
 }
 
 export const getJapenseHoliday = (date: Date) => holiday_jp.holidays[format(date)]
+
+export const isSameDay = (date1: Dayjs, date2: Dayjs) => date1.isSame(date2, "day")
