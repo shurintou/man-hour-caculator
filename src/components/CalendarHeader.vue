@@ -15,7 +15,7 @@
                         <a-button shape="circle" :icon="h(DoubleRightOutlined)" @click="addMonth(+12)" />
                     </a-space>
                     <a-date-picker size="large" :value="$props.currentDate" picker="month" placeholder="select year/month"
-                        style="width: 150px;" :allowClear="false" :onChange="changeYearMonth" />
+                        style="width: 110px;" :allowClear="false" :onChange="changeYearMonth" />
                 </a-space>
             </a-col>
         </a-row>
