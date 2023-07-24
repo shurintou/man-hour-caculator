@@ -15,3 +15,10 @@ export interface EditModalFormState {
     memo?: string
 }
 
+export interface TimeModalFormState {
+    dateList: Dayjs[]
+    predictWorkHours?: number
+    startTime?: Dayjs
+    EndTime?: Dayjs
+    restHours?: number
+}
