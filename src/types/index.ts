@@ -17,8 +17,7 @@ export interface EditModalFormState {
 
 export interface TimeModalFormState {
     dateList: Dayjs[]
-    predictWorkHours?: number
-    startTime?: Dayjs
-    EndTime?: Dayjs
+    scheduledWorkHours?: number
+    workTimeRange?: [Dayjs, Dayjs] | [undefined, undefined]
     restHours?: number
 }
