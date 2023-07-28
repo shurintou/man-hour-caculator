@@ -6,10 +6,15 @@
                 <a-input-number :style="inputStyle" v-model:value="formState.scheduledWorkHours" :min="inputMin"
                     :max="inputMax" :addon-after="inputAddonAfter" :step="inputStep" />
             </a-form-item>
-            <a-form-item label="Real work times" :labelCol="labelColStyle">
-                <a-time-range-picker v-model:value="formState.workTimeRange" format="HH:mm" :inputReadOnly="true" />
+            <a-form-item label="Start time" :labelCol="labelColStyle">
+                <a-time-picker v-model:value="formState.startTime" valueFormat="HHmm" format="HH:mm" :inputReadOnly="true"
+                    :minuteStep="minuteStep" />
             </a-form-item>
-            <a-form-item label="Real rest hours" :labelCol="labelColStyle">
+            <a-form-item label="End time" :labelCol="labelColStyle">
+                <a-time-picker v-model:value="formState.endTime" valueFormat="HHmm" format="HH:mm" :inputReadOnly="true"
+                    :minuteStep="minuteStep" />
+            </a-form-item>
+            <a-form-item label="Rest hours" :labelCol="labelColStyle">
                 <a-input-number :style="inputStyle" v-model:value="formState.restHours" :min="inputMin" :max="inputMax"
                     :addon-after="inputAddonAfter" :step="inputStep" />
             </a-form-item>
@@ -21,7 +26,7 @@
 import { reactive } from 'vue'
 import { useDateStore } from '@/stores/date'
 import type { UnwrapRef } from 'vue'
-import type { TimeModalFormState, DateType, HolidayType } from '@/types/index'
+import type { TimeModalFormState, DateType, HolidayType, DateTable } from '@/types/index'
 import db from '@/utils/datebase'
 
 const inputMin = 0
@@ -30,6 +35,7 @@ const inputAddonAfter = "hour"
 const inputStep = 0.01
 const inputStyle = { width: '120px' }
 const labelColStyle = { lg: { offset: 2 } }
+const minuteStep = 5
 
 const emit = defineEmits<{
     (e: 'changeTimeModalVisible', flg: boolean): void
@@ -42,8 +48,9 @@ const props = defineProps<{
 const dateStore = useDateStore()
 
 const formState: UnwrapRef<TimeModalFormState> = reactive({
+    startTime: undefined,
+    endTime: undefined,
     scheduledWorkHours: undefined,
-    workTimeRange: undefined,
     restHours: undefined,
 })
 const changeModalVisible = (flg: boolean) => {
@@ -51,36 +58,36 @@ const changeModalVisible = (flg: boolean) => {
 }
 
 const submitHandler = async (e: Event) => {
-    console.log(123)
     e.preventDefault()
     const dbHandler = await db
     const transaction = dbHandler.transaction('dates', 'readwrite')
     dateStore.$state.selectedDateList.forEach(async (selectedDate) => {
-        const dateKey = selectedDate.toDate()
+        const dateKey = selectedDate.format("YYYYMMDD")
         const storedDateInfo = await dbHandler.get("dates", dateKey)
         if (storedDateInfo) {
             type TimeModalFormStateKey = keyof typeof formState
             type DateInfoModalFormStateKey = keyof typeof storedDateInfo
             Object.keys(formState).forEach((key) => {
-                if (formState[key as TimeModalFormStateKey] && key in storedDateInfo) {
-                    storedDateInfo[key as DateInfoModalFormStateKey] = formState[key as TimeModalFormStateKey] as never
+                const value = formState[key as TimeModalFormStateKey]
+                if (value && key in storedDateInfo) {
+                    storedDateInfo[key as DateInfoModalFormStateKey] = value as never
                 }
             })
-            const res = await dbHandler.put("dates", storedDateInfo)
+            await dbHandler.put("dates", storedDateInfo)
         }
         else {
-            const addDto = {
+            const addDto: DateTable = {
                 date: dateKey,
                 type: "" as DateType,
                 holidayType: "" as HolidayType,
-                tasks: [],
-                restHours: formState.restHours || 0,
-                scheduledWorkHours: formState.scheduledWorkHours || 0,
-                workTimeRange: formState.workTimeRange || [undefined, undefined],
+                tasks: undefined,
+                startTime: formState.startTime,
+                endTime: formState.endTime,
+                restHours: formState.restHours,
+                scheduledWorkHours: formState.scheduledWorkHours,
                 memo: "",
-                indexes: { "by-memo": "" }
             }
-            const res = await dbHandler.add("dates", addDto)
+            await dbHandler.add("dates", addDto)
         }
 
     })

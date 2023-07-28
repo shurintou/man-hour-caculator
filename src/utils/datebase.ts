@@ -8,12 +8,18 @@ const [messageApi] = message.useMessage()
 
 interface LocalDb extends DBSchema {
     'dates': {
-        key: Date
+        key: string
         value: DateTable
+        indexes: {
+            'by-memo': string
+        }
     }
     'tasks': {
         key: number
         value: TaskTable
+        indexes: {
+            'by-description': string
+        }
     }
 }
 
@@ -22,8 +28,10 @@ async function dbHandler() {
     const db = await openDB<LocalDb>("localDb", dbVersion, {
         upgrade(db, oldVersion, newVersion, transaction, event) {
             if (oldVersion == 0) {
-                db.createObjectStore('dates', { keyPath: "date" })
-                db.createObjectStore('tasks')
+                const dateStore = db.createObjectStore('dates', { keyPath: "date" })
+                dateStore.createIndex('by-memo', 'memo')
+                const taskStore = db.createObjectStore('tasks')
+                taskStore.createIndex('by-description', 'description')
             }
         },
         blocked() {

@@ -1,51 +1,40 @@
-import { Dayjs } from 'dayjs'
+export interface Task extends CommonTaskProp { }
 
-export interface Task {
-    isDone: boolean
-    startTime?: Dayjs
-    endTime?: Dayjs
-    description: string
-}
-
-export interface TaskTable {
-    isDone: boolean
-    startTime: Dayjs
-    endTime: Dayjs
-    description: string
-    indexes: {
-        'by-isDone': boolean
-        'by-description': string
-    }
-}
+export interface TaskTable extends CommonTaskProp { }
 
 export type DateType = "workday" | "holiday" | ""
 
 export type HolidayType = "holiday" | "paid" | "sick" | "compensation" | "bereavement" | ""
 
-export interface EditModalFormState {
-    date: Dayjs
-    type: DateType
-    holidayType: HolidayType
-    tasks?: Task[]
-    memo?: string
+export interface EditModalFormState extends CommonEditProp {
+    date: string
+    tasks: Task[] | undefined
 }
 
-export interface DateTable {
-    date: Date,
-    type: DateType
-    holidayType: HolidayType
-    tasks: number[]
+export interface DateTable extends CommonDateProp, CommonEditProp {
+    date: string,
+    tasks: number[] | undefined
+}
+
+export interface TimeModalFormState extends CommonDateProp { }
+
+
+interface CommonDateProp {
+    startTime: string | undefined
+    endTime: string | undefined
+    scheduledWorkHours: number | undefined
+    restHours: number | undefined
+}
+
+interface CommonEditProp {
+    type: DateType | undefined
+    holidayType: HolidayType | undefined
     memo: string
-    scheduledWorkHours: number
-    workTimeRange: [Dayjs, Dayjs] | [undefined, undefined]
-    restHours: number
-    indexes: {
-        'by-memo': string
-    }
 }
 
-export interface TimeModalFormState {
-    scheduledWorkHours?: number
-    workTimeRange?: [Dayjs, Dayjs] | [undefined, undefined]
-    restHours?: number
+interface CommonTaskProp {
+    isDone: boolean
+    startTime: string | undefined
+    endTime: string | undefined
+    description: string | undefined
 }
