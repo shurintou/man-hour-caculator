@@ -3,8 +3,8 @@
         okText="submit" :maskClosable="false">
         <a-form :model="formState">
             <a-form-item label="Scheduled work hours" :labelCol="labelColStyle">
-                <a-input-number :style="inputStyle" v-model:value="formState.scheduledWorkHours" :min="inputMin"
-                    :max="inputMax" :addon-after="inputAddonAfter" :step="inputStep" />
+                <a-input-number type="number" :style="inputStyle" v-model:value="formState.scheduledWorkHours"
+                    :min="inputMin" :max="inputMax" :addon-after="inputAddonAfter" :step="inputStep" />
             </a-form-item>
             <a-form-item label="Start time" :labelCol="labelColStyle">
                 <a-time-picker v-model:value="formState.startTime" valueFormat="HHmm" format="HH:mm" :inputReadOnly="true"
@@ -15,8 +15,8 @@
                     :minuteStep="minuteStep" />
             </a-form-item>
             <a-form-item label="Rest hours" :labelCol="labelColStyle">
-                <a-input-number :style="inputStyle" v-model:value="formState.restHours" :min="inputMin" :max="inputMax"
-                    :addon-after="inputAddonAfter" :step="inputStep" />
+                <a-input-number type="number" :style="inputStyle" v-model:value="formState.restHours" :min="inputMin"
+                    :max="inputMax" :addon-after="inputAddonAfter" :step="inputStep" />
             </a-form-item>
         </a-form>
     </a-modal>
