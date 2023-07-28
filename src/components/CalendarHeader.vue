@@ -1,8 +1,8 @@
 <template>
     <div>
         <a-row>
-            <a-col :xs="{ span: 0 }" :sm="{ span: 0 }" :md="{ span: 14 }" :lg="{ span: 12 }">
-                <OperationBar :pcRenderMode="true" :currentDate="currentDate"></OperationBar>
+            <a-col v-if="windowWidth >= smWidth" :md="{ span: 14 }" :lg="{ span: 12 }">
+                <OperationBar :currentDate="currentDate"></OperationBar>
             </a-col>
             <a-col :xs="{ span: 24 }" :sm="{ span: 24 }" :md="{ span: 10 }" :lg="{ offset: 6, span: 6 }">
                 <a-space warp size="large">
@@ -28,6 +28,14 @@ import { h } from 'vue'
 import OperationBar from './OperationBar.vue'
 import { LeftOutlined, RightOutlined, DoubleLeftOutlined, DoubleRightOutlined, EnvironmentOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
+import { useWindowWidthStore } from '@/stores/windowWidth'
+import constant from '@/config/constants'
+import { storeToRefs } from 'pinia'
+
+const windowWidthStore = useWindowWidthStore()
+const { windowWidth } = storeToRefs(windowWidthStore)
+const { smWidth } = constant
+
 const props = defineProps<{
     currentDate: Dayjs,
 }>()

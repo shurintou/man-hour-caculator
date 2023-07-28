@@ -8,9 +8,7 @@
         :isSelected="dateStore.selectedDateList.some(old => isSameDay(old, current))"></DateButton>
     </template>
   </a-calendar>
-  <a-col :sm="{ span: 24 }" :md="{ span: 0 }">
-    <OperationBar :pc-render-mode="false" :currentDate="date"></OperationBar>
-  </a-col>
+  <OperationBar v-if="windowWidth < smWidth" :currentDate="date"></OperationBar>
 </template>
 
 <script lang="ts" setup>
@@ -21,9 +19,15 @@ import CalendarHeader from '@/components/CalendarHeader.vue'
 import OperationBar from './OperationBar.vue'
 import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
+import { useWindowWidthStore } from '@/stores/windowWidth'
+import constant from '@/config/constants'
+import { storeToRefs } from 'pinia'
 
 const date = ref<Dayjs>(dayjs())
 const dateStore = useDateStore()
+const windowWidthStore = useWindowWidthStore()
+const { windowWidth } = storeToRefs(windowWidthStore)
+const { smWidth } = constant
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
 

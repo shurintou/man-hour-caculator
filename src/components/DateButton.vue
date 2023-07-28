@@ -3,22 +3,22 @@
         <div class="ant-picker-calendar-date-value" style="font-size: large; font-weight: bold;"
             :style="{ 'color': dateColor }">
             <a-row>
-                <a-col :xs="{ span: 0 }" :sm="{ span: 0 }" :md="{ span: 0 }" :lg="{ span: 6 }">
+                <a-col v-if="windowWidth >= mdWidth" :lg="{ span: 6 }">
                     <a-badge v-if="props.isSelected" :number-style="{ backgroundColor: dateColor, fontWeight: 'bold' }"
                         :count="props.date.date()" />
                     <span v-else> {{ props.date.date() }}</span>
                 </a-col>
-                <a-col :xs="{ span: 14 }" :sm="{ span: 8 }" :md="{ span: 4 }" :lg="{ span: 0 }">
+                <a-col v-if="windowWidth < mdWidth" :xs="{ span: 14 }" :sm="{ span: 8 }" :md="{ span: 4 }">
                     <span
                         :style="{ backgroundColor: props.isSelected ? dateColor : '', borderRadius: '15px', color: props.isSelected ? '#FFFFFF' : '' }">
                         {{ props.date.date() }}
                     </span>
                 </a-col>
-                <a-col :xs="{ span: 0 }" :md="{ span: 20 }" :lg="{ span: 18 }" v-if="isJapaneseHolidayGot"
+                <a-col v-if="isJapaneseHolidayGot && windowWidth >= smWidth" :md="{ span: 20 }" :lg="{ span: 18 }"
                     class="japanese-holiday-name-text">
                     <span>{{ japaneseHolidayName }}</span>
                 </a-col>
-                <a-col :xs="{ span: 10 }" :sm="{ span: 16 }" :md="{ span: 0 }" v-if="isJapaneseHolidayGot">
+                <a-col v-if="isJapaneseHolidayGot && windowWidth < smWidth" :xs="{ span: 10 }" :sm="{ span: 16 }">
                     <span>●</span><!-- to show a dot when at a short width device -->
                 </a-col>
             </a-row>
@@ -31,6 +31,14 @@
 import { Dayjs } from 'dayjs'
 import { computed } from 'vue'
 import { getJapenseHoliday } from '@/utils/holidays'
+import { useWindowWidthStore } from '@/stores/windowWidth'
+import { storeToRefs } from 'pinia'
+import constant from '@/config/constants'
+
+const windowWidthStore = useWindowWidthStore()
+const { windowWidth } = storeToRefs(windowWidthStore)
+const { smWidth, mdWidth } = constant
+
 const emit = defineEmits<{
     (e: 'changeDate', newDate: Dayjs): void
 }>()

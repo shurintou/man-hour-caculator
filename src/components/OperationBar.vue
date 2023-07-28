@@ -1,8 +1,8 @@
 <template>
-    <a-space wrap :size="props.pcRenderMode ? 'large' : 'middle'">
+    <a-space wrap :size="isPcMode ? 'large' : 'middle'">
         <a-dropdown>
             <a-button type="primary" :icon="h(PlusOutlined)">
-                <span v-if="props.pcRenderMode">Add</span>
+                <span v-if="isPcMode">Add</span>
             </a-button>
             <template #overlay>
                 <a-menu>
@@ -16,14 +16,14 @@
         </a-dropdown>
         <a-button type="primary" danger :icon="h(CloseCircleOutlined)" :disabled="!isCancelable"
             @click="dateStore.$reset()">
-            <span v-if="props.pcRenderMode">Cancel</span>
+            <span v-if="isPcMode">Cancel</span>
         </a-button>
         <a-button type="default" :icon="h(ClockCircleOutlined)" :disabled="!isCancelable"
             @click="changeTimeModalVisible(true)">
-            <span v-if="props.pcRenderMode">Time</span>
+            <span v-if="isPcMode">Time</span>
         </a-button>
         <a-button type="default" :icon="h(EditOutlined)" :disabled="!isEditable" @click="changeEditModalVisible(true)">
-            <span v-if="props.pcRenderMode">Edit</span>
+            <span v-if="isPcMode">Edit</span>
         </a-button>
     </a-space>
     <EditModal :isModalVisible="isEditModalVisible" @changeEditModalVisible="(flg: boolean) => changeEditModalVisible(flg)">
@@ -41,16 +41,20 @@ import { getJapenseHoliday, isSameDay } from '@/utils/holidays'
 import EditModal from './EditModal.vue'
 import TimeModal from './TimeModal.vue'
 import { useDateStore } from '@/stores/date'
+import { useWindowWidthStore } from '@/stores/windowWidth'
+import { storeToRefs } from 'pinia'
+
 
 const isEditModalVisible = ref<boolean>(false)
 const isTimeModalVisible = ref<boolean>(false)
 
 const props = defineProps<{
-    pcRenderMode: boolean,
     currentDate: Dayjs,
 }>()
 
 const dateStore = useDateStore()
+const windowWidthStore = useWindowWidthStore()
+const { isPcMode } = storeToRefs(windowWidthStore)
 
 const isEditable = computed(() => dateStore.$state.selectedDateList.length === 1)
 
