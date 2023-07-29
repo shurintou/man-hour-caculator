@@ -79,7 +79,7 @@ const changeDate = (newDate: Dayjs) => {
     text-align: left;
 }
 
-@media(max-width: 991px) {
+@media(max-width: 767px) {
     :where(.css-dev-only-do-not-override-eq3tly).ant-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
         position: absolute;
         top: 0;
