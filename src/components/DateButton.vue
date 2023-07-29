@@ -85,7 +85,7 @@ const changeDate = (newDate: Dayjs) => {
         top: 0;
         inset-inline-end: 0;
         bottom: 0;
-        left: -10px;
+        left: -6px;
         z-index: 1;
         border: 1px solid #1677ff;
         border-radius: 4px;
