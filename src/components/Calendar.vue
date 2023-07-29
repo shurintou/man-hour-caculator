@@ -1,5 +1,6 @@
 <template>
-  <a-calendar :value="date" :disabledDate="isDisabledMonth" class="custom-ant-calendar" @select="selectDate">
+  <a-calendar :fullscreen="windowWidth >= mdWidth" :value="date" :disabledDate="isDisabledMonth"
+    class="custom-ant-calendar" @select="selectDate">
     <template #headerRender="{ value }">
       <CalendarHeader @change-date="changeDate" :currentDate="value"></CalendarHeader>
     </template>
@@ -27,7 +28,7 @@ const date = ref<Dayjs>(dayjs())
 const dateStore = useDateStore()
 const windowWidthStore = useWindowWidthStore()
 const { windowWidth } = storeToRefs(windowWidthStore)
-const { smWidth } = constant
+const { smWidth, mdWidth } = constant
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
 

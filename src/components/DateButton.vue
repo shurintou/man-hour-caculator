@@ -78,4 +78,23 @@ const changeDate = (newDate: Dayjs) => {
 .japanese-holiday-name-text {
     text-align: left;
 }
+
+@media(max-width: 991px) {
+    :where(.css-dev-only-do-not-override-eq3tly).ant-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+        position: absolute;
+        top: 0;
+        inset-inline-end: 0;
+        bottom: 0;
+        left: -10px;
+        z-index: 1;
+        border: 1px solid #1677ff;
+        border-radius: 4px;
+        content: "";
+    }
+}
+
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+    background: #FFFFFF !important;
+}
 </style>
