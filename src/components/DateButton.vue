@@ -1,27 +1,15 @@
 <template>
     <div class="ant-picker-cell-inner ant-picker-calendar-date" @click="changeDate(props.date)">
-        <div class="ant-picker-calendar-date-value" style="font-size: large; font-weight: bold;"
-            :style="{ 'color': dateColor }">
-            <a-row>
-                <a-col v-if="windowWidth >= mdWidth" :lg="{ span: 6 }">
-                    <a-badge v-if="props.isSelected" :number-style="{ backgroundColor: dateColor, fontWeight: 'bold' }"
-                        :count="props.date.date()" />
-                    <span v-else> {{ props.date.date() }}</span>
-                </a-col>
-                <a-col v-if="windowWidth < mdWidth" :xs="{ span: 14 }" :sm="{ span: 8 }" :md="{ span: 4 }">
-                    <span
-                        :style="{ backgroundColor: props.isSelected ? dateColor : '', borderRadius: '15px', color: props.isSelected ? '#FFFFFF' : '' }">
-                        {{ props.date.date() }}
-                    </span>
-                </a-col>
-                <a-col v-if="isJapaneseHolidayGot && windowWidth >= smWidth" :md="{ span: 20 }" :lg="{ span: 18 }"
-                    class="japanese-holiday-name-text">
-                    <span>{{ japaneseHolidayName }}</span>
-                </a-col>
-                <a-col v-if="isJapaneseHolidayGot && windowWidth < smWidth" :xs="{ span: 10 }" :sm="{ span: 16 }">
-                    <span>●</span><!-- to show a dot when at a short width device -->
-                </a-col>
-            </a-row>
+        <div class="ant-picker-calendar-date-value japanese-holiday-name-text"
+            :style="{ 'color': dateColor, 'width': responsiveDateButtonWidth }">
+            <span style=" border-radius: 15px;"
+                :style="{ backgroundColor: props.isSelected ? dateColor : '', color: props.isSelected ? '#FFFFFF' : '' }">
+                {{ props.date.date() }}
+            </span>
+            <template v-if="isJapaneseHolidayGot">
+                <span v-if="windowWidth >= smWidth">{{ japaneseHolidayName }}</span>
+                <span v-else>●</span><!-- to show a dot when at a short width device -->
+            </template>
         </div>
         <div class="ant-picker-calendar-date-content"></div>
     </div>
@@ -37,7 +25,7 @@ import constant from '@/config/constants'
 
 const windowWidthStore = useWindowWidthStore()
 const { windowWidth } = storeToRefs(windowWidthStore)
-const { smWidth, mdWidth } = constant
+const { smWidth } = constant
 
 const emit = defineEmits<{
     (e: 'changeDate', newDate: Dayjs): void
@@ -50,13 +38,15 @@ const props = defineProps<{
 }>()
 
 const japaneseHolidayName = computed(() => {
-    let holidayName = isJapaneseHolidayGot.value?.name
+    let holidayName = isJapaneseHolidayGot.value?.name_en
     if (holidayName) {
         if (holidayName.indexOf("振替") !== -1) return "振替休日"
         return holidayName
     }
     return ''
 })
+
+const responsiveDateButtonWidth = computed(() => (windowWidth.value / 7) + 'px') // 7 is for 7 days in one line.
 
 const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.date.toDate()))
 
@@ -76,7 +66,11 @@ const changeDate = (newDate: Dayjs) => {
 
 <style scoped>
 .japanese-holiday-name-text {
-    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: large;
+    font-weight: bold;
 }
 
 @media(max-width: 767px) {

@@ -1,6 +1,6 @@
 <template>
-  <a-calendar :fullscreen="windowWidth >= smWidth" :value="date" :disabledDate="isDisabledMonth"
-    class="custom-ant-calendar" @select="selectDate">
+  <a-calendar :fullscreen="false" :value="date" :disabledDate="isDisabledMonth" class="custom-ant-calendar"
+    @select="selectDate">
     <template #headerRender="{ value }">
       <CalendarHeader @change-date="changeDate" :currentDate="value"></CalendarHeader>
     </template>
