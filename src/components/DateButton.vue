@@ -1,6 +1,6 @@
 <template>
     <div class="ant-picker-cell-inner ant-picker-calendar-date" @click="changeDate(props.date)">
-        <div class="ant-picker-calendar-date-value japanese-holiday-name-text"
+        <div class="ant-picker-calendar-date-value date-text"
             :style="{ 'color': dateColor, 'width': responsiveDateButtonWidth }">
             <span style=" border-radius: 15px;"
                 :style="{ backgroundColor: props.isSelected ? dateColor : '', color: props.isSelected ? '#FFFFFF' : '' }">
@@ -65,7 +65,7 @@ const changeDate = (newDate: Dayjs) => {
 </script>
 
 <style scoped>
-.japanese-holiday-name-text {
+.date-text {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
