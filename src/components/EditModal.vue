@@ -24,7 +24,7 @@ const props = defineProps<{
 const dateStore = useDateStore()
 
 const formState: UnwrapRef<EditModalFormState> = reactive({
-    date: dateStore.$state.selectedDateList[0],
+    date: dateStore.$state.selectedDateList?.[0]?.format("YYYYMMDD") || "",
     type: "",
     holidayType: "",
     tasks: [],
