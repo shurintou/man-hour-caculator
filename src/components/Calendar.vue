@@ -52,4 +52,28 @@ const selectDate = (selectedDate: Dayjs) => {
   /* to override the style of the header of the calendar. */
   text-align: center;
 }
+
+:where(.css-dev-only-do-not-override-eq3tly).ant-picker-calendar .ant-picker-cell-disabled::before {
+  /* not to set background color for date in previous or next month */
+  background-color: unset !important;
+}
+
+.ant-picker-cell {
+  padding: 0px !important;
+}
+
+@media screen and (min-width: 992px) {
+  .ant-picker-cell :hover {
+    background-color: #f2f4f7;
+  }
+}
+
+.ant-picker-cell-today {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #1677ff;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  background-color: #e6f4ff;
+}
 </style>

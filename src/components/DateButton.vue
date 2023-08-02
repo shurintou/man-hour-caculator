@@ -1,7 +1,6 @@
 <template>
-    <div class="ant-picker-cell-inner ant-picker-calendar-date" @click="changeDate(props.date)">
-        <div class="ant-picker-calendar-date-value date-text"
-            :style="{ 'color': dateColor, 'width': responsiveDateButtonWidth }">
+    <div class="calendar-date-box" :style="{ 'width': responsiveDateButtonWidth }" @click="changeDate(props.date)">
+        <div class="calendar-date-text" :style="{ 'color': dateColor }">
             <span style=" border-radius: 15px;"
                 :style="{ backgroundColor: props.isSelected ? dateColor : '', color: props.isSelected ? '#FFFFFF' : '' }">
                 {{ props.date.date() }}
@@ -11,17 +10,28 @@
                 <span v-else>●</span><!-- to show a dot when at a short width device -->
             </template>
         </div>
-        <div class="ant-picker-calendar-date-content"></div>
+        <div class="calendar-date-content">
+            <div style="height: 100%;">
+                <span v-if="isCurrentMonth && workTime > 0">
+                    {{ displayWorkTime }}
+                    <ClockCircleTwoTone v-if="isReal" />
+                    <ClockCircleOutlined v-else />
+                </span>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { Dayjs } from 'dayjs'
-import { computed } from 'vue'
+import dayjs, { Dayjs } from 'dayjs'
+import { ClockCircleTwoTone, ClockCircleOutlined } from '@ant-design/icons-vue'
+import { computed, onMounted, ref } from 'vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { useWindowWidthStore } from '@/stores/windowWidth'
 import { storeToRefs } from 'pinia'
 import constant from '@/config/constants'
+import db from '@/utils/datebase'
+
 
 const windowWidthStore = useWindowWidthStore()
 const { windowWidth } = storeToRefs(windowWidthStore)
@@ -46,7 +56,7 @@ const japaneseHolidayName = computed(() => {
     return ''
 })
 
-const responsiveDateButtonWidth = computed(() => (windowWidth.value / 7) + 'px') // 7 is for 7 days in one line.
+const responsiveDateButtonWidth = computed(() => (windowWidth.value / 7) - 4 + 'px') // 7 is for 7 days in one line, and 4 is for 2*2 of two borders.
 
 const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.date.toDate()))
 
@@ -62,10 +72,41 @@ const changeDate = (newDate: Dayjs) => {
     emit("changeDate", newDate)
 }
 
+const workTime = ref<number>(0)
+const isReal = ref<boolean>(false)
+const displayWorkTime = computed(() => {
+    if (countDecimalPlaces(workTime.value) > 2) {
+        return workTime.value.toFixed(2)
+    } return workTime.value
+})
+
+const countDecimalPlaces = (number: number) => {
+    const decimalPart = (number.toString().split('.')[1] || '').length
+    return decimalPart
+}
+
+onMounted(async () => {
+    const dbHandler = await db
+    const res = await dbHandler.get("dates", props.date.format("YYYYMMDD"))
+    if (res) {
+        const { startTime, endTime, restHours, scheduledWorkHours } = res
+        if (startTime && endTime) {
+            const startDate = dayjs(startTime, 'HHmm')
+            const endDate = dayjs(endTime, 'HHmm')
+            const realWorkTime = endDate.diff(startDate, "hour", true)
+            workTime.value = realWorkTime - (restHours || 0)
+            isReal.value = true
+        }
+        else if (scheduledWorkHours) {
+            workTime.value = scheduledWorkHours
+        }
+    }
+})
+
 </script>
 
 <style scoped>
-.date-text {
+.calendar-date-text {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -73,22 +114,7 @@ const changeDate = (newDate: Dayjs) => {
     font-weight: bold;
 }
 
-@media(max-width: 767px) {
-    :where(.css-dev-only-do-not-override-eq3tly).ant-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
-        position: absolute;
-        top: 0;
-        inset-inline-end: 0;
-        bottom: 0;
-        left: -6px;
-        z-index: 1;
-        border: 1px solid #1677ff;
-        border-radius: 4px;
-        content: "";
-    }
-}
-
-
-.ant-picker-cell-selected .ant-picker-cell-inner {
-    background: #FFFFFF !important;
+.calendar-date-content {
+    height: 25px !important;
 }
 </style>
