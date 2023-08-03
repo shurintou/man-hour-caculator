@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import { useDateStore } from '@/stores/date'
 import type { UnwrapRef } from 'vue'
 import type { TimeModalFormState, DateType, HolidayType, DateTable } from '@/types/index'
@@ -79,6 +79,25 @@ const props = defineProps<{
 }>()
 
 const dateStore = useDateStore()
+
+watch(() => props.isModalVisible, async (newVal) => {
+    if (newVal === true) {
+        if (dateStore.$state.selectedDateList.length === 1) {
+            const dbHandler = await db
+            const transaction = dbHandler.transaction('dates', 'readwrite')
+            const dateKey = dateStore.$state.selectedDateList[0].format("YYYYMMDD")
+            const storedDateInfo = await dbHandler.get("dates", dateKey)
+            await transaction.done
+            if (storedDateInfo) {
+                const { startTime, endTime, scheduledWorkHours, restHours } = storedDateInfo
+                formState.startTime = startTime
+                formState.endTime = endTime
+                formState.scheduledWorkHours = scheduledWorkHours
+                formState.restHours = restHours
+            }
+        }
+    }
+})
 
 const formState: UnwrapRef<TimeModalFormState> = reactive({
     startTime: undefined,
