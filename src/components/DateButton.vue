@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import dayjs, { Dayjs } from 'dayjs'
 import { ClockCircleTwoTone, ClockCircleOutlined } from '@ant-design/icons-vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onUpdated, ref } from 'vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { useWindowWidthStore } from '@/stores/windowWidth'
 import { storeToRefs } from 'pinia'
@@ -85,7 +85,7 @@ const countDecimalPlaces = (number: number) => {
     return decimalPart
 }
 
-onMounted(async () => {
+onUpdated(async () => {
     const dbHandler = await db
     const res = await dbHandler.get("dates", props.date.format("YYYYMMDD"))
     if (res) {
@@ -100,6 +100,9 @@ onMounted(async () => {
         else if (scheduledWorkHours) {
             workTime.value = scheduledWorkHours
         }
+    }
+    else {
+        workTime.value = 0
     }
 })
 
