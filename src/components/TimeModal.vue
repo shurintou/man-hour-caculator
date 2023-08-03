@@ -19,6 +19,8 @@
                     :addon-after="inputAddonAfter" :step="inputStep" />
             </a-form-item>
         </a-form>
+        <a-alert v-if="dateStore.selectedDateList.length > 1" message="You are going to update multiple dates."
+            type="warning" show-icon />
     </a-modal>
 </template>
 
@@ -94,6 +96,12 @@ watch(() => props.isModalVisible, async (newVal) => {
                 formState.endTime = endTime
                 formState.scheduledWorkHours = scheduledWorkHours
                 formState.restHours = restHours
+            }
+            else {
+                formState.startTime = undefined
+                formState.endTime = undefined
+                formState.scheduledWorkHours = undefined
+                formState.restHours = undefined
             }
         }
     }
