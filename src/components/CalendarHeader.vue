@@ -29,12 +29,12 @@ import OperationBar from './OperationBar.vue'
 import { LeftOutlined, RightOutlined, DoubleLeftOutlined, DoubleRightOutlined, EnvironmentOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { useWindowWidthStore } from '@/stores/windowWidth'
-import constant from '@/config/constants'
+import { windowWidthConstant } from '@/config/constants'
 import { storeToRefs } from 'pinia'
 
 const windowWidthStore = useWindowWidthStore()
 const { windowWidth } = storeToRefs(windowWidthStore)
-const { smWidth } = constant
+const { smWidth } = windowWidthConstant
 
 const props = defineProps<{
     currentDate: Dayjs,

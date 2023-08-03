@@ -29,13 +29,13 @@ import { computed, onUpdated, ref } from 'vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { useWindowWidthStore } from '@/stores/windowWidth'
 import { storeToRefs } from 'pinia'
-import constant from '@/config/constants'
+import { windowWidthConstant } from '@/config/constants'
 import db from '@/utils/datebase'
 
 
 const windowWidthStore = useWindowWidthStore()
 const { windowWidth } = storeToRefs(windowWidthStore)
-const { smWidth } = constant
+const { smWidth } = windowWidthConstant
 
 const emit = defineEmits<{
     (e: 'changeDate', newDate: Dayjs): void

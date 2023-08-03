@@ -21,14 +21,14 @@ import OperationBar from './OperationBar.vue'
 import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
 import { useWindowWidthStore } from '@/stores/windowWidth'
-import constant from '@/config/constants'
+import { windowWidthConstant } from '@/config/constants'
 import { storeToRefs } from 'pinia'
 
 const date = ref<Dayjs>(dayjs())
 const dateStore = useDateStore()
 const windowWidthStore = useWindowWidthStore()
 const { windowWidth } = storeToRefs(windowWidthStore)
-const { smWidth } = constant
+const { smWidth } = windowWidthConstant
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
 

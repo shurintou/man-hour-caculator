@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import constant from '@/config/constants'
+import { windowWidthConstant } from '@/config/constants'
 
 export const useWindowWidthStore = defineStore('windowWidth', () => {
     const windowWidth = ref(window.innerWidth)
-    const { xsWidth, smWidth, mdWidth, lgWidth, xlWidth } = constant
+    const { xsWidth, smWidth, mdWidth, lgWidth, xlWidth } = windowWidthConstant
 
     const gridType = computed(() => {
         const { value } = windowWidth
