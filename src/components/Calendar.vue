@@ -22,6 +22,7 @@ import OperationBar from './OperationBar.vue'
 import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
 import { windowWidthKey } from '@/types/inject'
+import type { ChangeDateData } from '@/types/index'
 import { windowWidthConstant } from '@/config/constants'
 
 const date = ref<Dayjs>(dayjs())
@@ -31,8 +32,9 @@ const { smWidth } = windowWidthConstant
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
 
-const changeDate = (newDate: Dayjs) => {
-  date.value = newDate
+const changeDate = (changeDateData: ChangeDateData) => {
+  date.value = changeDateData.newDate
+  if (changeDateData.clearAll) dateStore.$reset()
 }
 
 const selectDate = (selectedDate: Dayjs) => {

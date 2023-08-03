@@ -1,3 +1,5 @@
+import type { Dayjs } from 'dayjs'
+
 export interface Task extends CommonTaskProp { }
 
 export interface TaskTable extends CommonTaskProp { }
@@ -18,6 +20,10 @@ export interface DateTable extends CommonDateProp, CommonEditProp {
 
 export interface TimeModalFormState extends CommonDateProp { }
 
+export interface ChangeDateData {
+    newDate: Dayjs,
+    clearAll: boolean,
+}
 
 interface CommonDateProp {
     startTime: string | undefined

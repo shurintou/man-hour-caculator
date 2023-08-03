@@ -29,16 +29,13 @@ import { windowWidthRef } from '@/main'
 import { ClockCircleTwoTone, ClockCircleOutlined } from '@ant-design/icons-vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { windowWidthConstant } from '@/config/constants'
+import type { ChangeDateData } from '@/types/index'
 import { windowWidthKey } from '@/types/inject'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 
 const windowWidth = inject(windowWidthKey, windowWidthRef)
 const { smWidth } = windowWidthConstant
-
-const emit = defineEmits<{
-    (e: 'changeDate', newDate: Dayjs): void
-}>()
 
 const props = defineProps<{
     date: Dayjs,
@@ -69,8 +66,10 @@ const dateColor = computed(() => {
     return '#000000'
 })
 
-const changeDate = (newDate: Dayjs) => {
-    emit("changeDate", newDate)
+const emit = defineEmits<{ (e: 'changeDate', changeDateData: ChangeDateData): void }>()
+
+const changeDate = (newDate: Dayjs, clearAll = false) => {
+    emit("changeDate", { newDate: newDate, clearAll: clearAll })
 }
 
 const workTime = ref<number>(0)

@@ -30,6 +30,7 @@ import OperationBar from './OperationBar.vue'
 import { LeftOutlined, RightOutlined, DoubleLeftOutlined, DoubleRightOutlined, EnvironmentOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthKey } from '@/types/inject'
+import type { ChangeDateData } from '@/types/index'
 import { windowWidthConstant } from '@/config/constants'
 
 const { smWidth } = windowWidthConstant
@@ -38,25 +39,23 @@ const windowWidth = inject(windowWidthKey, windowWidthRef)
 const props = defineProps<{
     currentDate: Dayjs,
 }>()
-const emit = defineEmits<{
-    (e: 'changeDate', newDate: Dayjs): void
-}>()
 
+const emit = defineEmits<{ (e: 'changeDate', changeDateData: ChangeDateData): void }>()
 
-const changeDate = (newDate: Dayjs) => {
-    emit('changeDate', newDate)
+const changeDate = (newDate: Dayjs, clearAll = false) => {
+    emit('changeDate', { newDate: newDate, clearAll: clearAll })
 }
 
 
 const changeYearMonth = (newDate: Dayjs) => {
     if (newDate.year() !== props.currentDate.year() || newDate.month() !== props.currentDate.month())
-        changeDate(newDate)
+        changeDate(newDate, true)
 }
 
 
 const addMonth = (payload: number) => {
     const newDate = props.currentDate.add(payload, 'month')
-    changeDate(newDate)
+    changeDate(newDate, true)
 }
 
 </script>
