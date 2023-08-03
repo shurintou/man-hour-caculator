@@ -29,24 +29,23 @@
 
 
 <script lang="ts" setup>
-import { h, computed, ref } from 'vue'
+import { h, computed, ref, inject } from 'vue'
 import { PlusOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons-vue'
 import { Dayjs } from 'dayjs'
+import { isPcModeRef } from '@/main'
 import { getJapenseHoliday, isSameDay } from '@/utils/holidays'
 import TimeModal from './TimeModal.vue'
+import { isPcModeKey } from '@/types/inject'
 import { useDateStore } from '@/stores/date'
-import { useWindowWidthStore } from '@/stores/windowWidth'
-import { storeToRefs } from 'pinia'
 
 const isTimeModalVisible = ref<boolean>(false)
+const isPcMode = inject(isPcModeKey, isPcModeRef)
 
 const props = defineProps<{
     currentDate: Dayjs,
 }>()
 
 const dateStore = useDateStore()
-const windowWidthStore = useWindowWidthStore()
-const { isPcMode } = storeToRefs(windowWidthStore)
 
 const isCancelable = computed(() => dateStore.$state.selectedDateList.length > 0)
 

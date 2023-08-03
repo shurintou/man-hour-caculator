@@ -13,21 +13,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
+import { windowWidthRef } from '@/main'
 import dayjs, { Dayjs } from 'dayjs'
 import DateButton from '@/components/DateButton.vue'
 import CalendarHeader from '@/components/CalendarHeader.vue'
 import OperationBar from './OperationBar.vue'
 import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
-import { useWindowWidthStore } from '@/stores/windowWidth'
+import { windowWidthKey } from '@/types/inject'
 import { windowWidthConstant } from '@/config/constants'
-import { storeToRefs } from 'pinia'
 
 const date = ref<Dayjs>(dayjs())
 const dateStore = useDateStore()
-const windowWidthStore = useWindowWidthStore()
-const { windowWidth } = storeToRefs(windowWidthStore)
+const windowWidth = inject(windowWidthKey, windowWidthRef)
 const { smWidth } = windowWidthConstant
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()

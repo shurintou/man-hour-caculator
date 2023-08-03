@@ -23,18 +23,17 @@
 </template>
 
 <script lang="ts" setup>
+import { inject } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
+import { windowWidthRef } from '@/main'
 import { ClockCircleTwoTone, ClockCircleOutlined } from '@ant-design/icons-vue'
 import { computed, onUpdated, ref } from 'vue'
 import { getJapenseHoliday } from '@/utils/holidays'
-import { useWindowWidthStore } from '@/stores/windowWidth'
-import { storeToRefs } from 'pinia'
 import { windowWidthConstant } from '@/config/constants'
+import { windowWidthKey } from '@/types/inject'
 import db from '@/utils/datebase'
 
-
-const windowWidthStore = useWindowWidthStore()
-const { windowWidth } = storeToRefs(windowWidthStore)
+const windowWidth = inject(windowWidthKey, windowWidthRef)
 const { smWidth } = windowWidthConstant
 
 const emit = defineEmits<{

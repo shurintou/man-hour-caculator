@@ -24,17 +24,16 @@
 
 
 <script lang="ts" setup>
-import { h } from 'vue'
+import { h, inject } from 'vue'
+import { windowWidthRef } from '@/main'
 import OperationBar from './OperationBar.vue'
 import { LeftOutlined, RightOutlined, DoubleLeftOutlined, DoubleRightOutlined, EnvironmentOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
-import { useWindowWidthStore } from '@/stores/windowWidth'
+import { windowWidthKey } from '@/types/inject'
 import { windowWidthConstant } from '@/config/constants'
-import { storeToRefs } from 'pinia'
 
-const windowWidthStore = useWindowWidthStore()
-const { windowWidth } = storeToRefs(windowWidthStore)
 const { smWidth } = windowWidthConstant
+const windowWidth = inject(windowWidthKey, windowWidthRef)
 
 const props = defineProps<{
     currentDate: Dayjs,
