@@ -96,15 +96,14 @@ watch(() => props.isModalVisible, async (newVal) => {
                 formState.endTime = endTime
                 formState.scheduledWorkHours = scheduledWorkHours
                 formState.restHours = restHours
-            }
-            else {
-                formState.startTime = undefined
-                formState.endTime = undefined
-                formState.scheduledWorkHours = undefined
-                formState.restHours = undefined
+                return
             }
         }
     }
+    formState.startTime = undefined
+    formState.endTime = undefined
+    formState.scheduledWorkHours = undefined
+    formState.restHours = undefined
 })
 
 const formState: UnwrapRef<TimeModalFormState> = reactive({
