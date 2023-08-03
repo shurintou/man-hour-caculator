@@ -30,6 +30,7 @@ import { ClockCircleTwoTone, ClockCircleOutlined } from '@ant-design/icons-vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { windowWidthConstant } from '@/config/constants'
 import { windowWidthKey } from '@/types/inject'
+import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 
 const windowWidth = inject(windowWidthKey, windowWidthRef)
@@ -44,6 +45,8 @@ const props = defineProps<{
     isCurrentMonth: boolean,
     isSelected: boolean,
 }>()
+
+emitter.on(props.date.format("YYYYMMDD"), () => fetchDateData())
 
 const japaneseHolidayName = computed(() => {
     let holidayName = isJapaneseHolidayGot.value?.name_en
@@ -83,8 +86,8 @@ const countDecimalPlaces = (number: number) => {
     return decimalPart
 }
 
-onUpdated(() => fetchDateData())
-onMounted(() => fetchDateData())
+onUpdated(async () => fetchDateData())
+onMounted(async () => fetchDateData())
 
 const fetchDateData = async () => {
     const dbHandler = await db

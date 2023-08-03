@@ -27,6 +27,7 @@ import { reactive } from 'vue'
 import { useDateStore } from '@/stores/date'
 import type { UnwrapRef } from 'vue'
 import type { TimeModalFormState, DateType, HolidayType, DateTable } from '@/types/index'
+import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 import { Form } from 'ant-design-vue'
 
@@ -127,9 +128,10 @@ const submitHandler = async (e: Event) => {
                 }
                 await dbHandler.add("dates", addDto)
             }
-
+            emitter.emit(dateKey)
         })
         await transaction.done
+        dateStore.$reset()
         changeModalVisible(false)
     }
 }
