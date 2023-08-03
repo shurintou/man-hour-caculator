@@ -23,11 +23,10 @@
 </template>
 
 <script lang="ts" setup>
-import { inject } from 'vue'
+import { inject, onMounted, computed, onUpdated, ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthRef } from '@/main'
 import { ClockCircleTwoTone, ClockCircleOutlined } from '@ant-design/icons-vue'
-import { computed, onUpdated, ref } from 'vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { windowWidthConstant } from '@/config/constants'
 import { windowWidthKey } from '@/types/inject'
@@ -84,7 +83,10 @@ const countDecimalPlaces = (number: number) => {
     return decimalPart
 }
 
-onUpdated(async () => {
+onUpdated(() => fetchDateData())
+onMounted(() => fetchDateData())
+
+const fetchDateData = async () => {
     const dbHandler = await db
     const res = await dbHandler.get("dates", props.date.format("YYYYMMDD"))
     if (res) {
@@ -103,7 +105,7 @@ onUpdated(async () => {
     else {
         workTime.value = 0
     }
-})
+}
 
 </script>
 
