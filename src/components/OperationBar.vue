@@ -54,6 +54,8 @@ const changeTimeModalVisible = (flg: boolean) => isTimeModalVisible.value = flg
 const selectDate = (selectType: "work" | "all" | "holiday") => {
     const daysInCurrentMonth = props.currentDate.daysInMonth()
     const firstDateOfCurrentMonth = props.currentDate.startOf('month')
+    let allSelected = true
+    const indexOfSelectedDatesInSelectedDateList: number[] = []
     for (let i = 0; i < daysInCurrentMonth; i++) {
         const date = firstDateOfCurrentMonth.add(i, 'day')
         let shouldPush = false
@@ -72,9 +74,16 @@ const selectDate = (selectType: "work" | "all" | "holiday") => {
         }
         if (shouldPush) {
             const oldIndex = dateStore.selectedDateList.findIndex(old => isSameDay(old, date))
-            if (oldIndex === -1) dateStore.$patch(state => state.selectedDateList.push(date))
+            if (oldIndex === -1) {
+                allSelected = false
+                dateStore.$patch(state => state.selectedDateList.push(date))
+            }
+            else {
+                indexOfSelectedDatesInSelectedDateList.push(oldIndex)
+            }
         }
     }
+    if (allSelected) dateStore.$patch(state => state.selectedDateList = state.selectedDateList.filter((date, index) => !indexOfSelectedDatesInSelectedDateList.includes(index)))
 }
 
 </script>
