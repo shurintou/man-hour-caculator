@@ -1,7 +1,7 @@
 
 import { createApp, ref, computed } from 'vue'
 import { createPinia } from 'pinia'
-import { Calendar, DatePicker, Space, Button, Row, Col, Badge, Dropdown, Menu, Modal, Form, InputNumber, TimePicker, Alert } from 'ant-design-vue'
+import { Alert, Avatar, Badge, Button, Calendar, Col, DatePicker, Dropdown, Form, InputNumber, Menu, Modal, Row, Space, TimePicker } from 'ant-design-vue'
 import App from './App.vue'
 import { windowWidthKey, gridTypeKey, isPcModeKey, isSpModeKey } from '@/types/inject'
 import { windowWidthConstant } from '@/config/constants'
@@ -48,6 +48,7 @@ app.provide(isSpModeKey, isSPModeRef)
 
 app.use(createPinia())
 app.use(Alert)
+app.use(Avatar)
 app.use(Badge)
 app.use(Button)
 app.use(Calendar)

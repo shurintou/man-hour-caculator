@@ -12,11 +12,19 @@
         </div>
         <div class="calendar-date-content">
             <div style="height: 100%;">
-                <span v-if="isCurrentMonth && workTime > 0">
-                    {{ displayWorkTime }}
-                    <ClockCircleTwoTone v-if="isReal" />
-                    <ClockCircleOutlined v-else />
-                </span>
+                <a-space :size="4">
+                    <span v-if="isCurrentMonth && workTime > 0">
+                        {{ displayWorkTime }}
+                        <ClockCircleTwoTone v-if="isReal" />
+                        <ClockCircleOutlined v-else />
+                    </span>
+                    <span v-if="taskList.length > 0 || memo.length > 0">
+                        <a-badge :dot="!taskAllDone">
+                            <ScheduleOutlined v-if="taskAllDone" />
+                            <ScheduleTwoTone v-else />
+                        </a-badge>
+                    </span>
+                </a-space>
             </div>
         </div>
     </div>
@@ -26,10 +34,10 @@
 import { inject, onMounted, computed, onUpdated, ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthRef } from '@/main'
-import { ClockCircleTwoTone, ClockCircleOutlined } from '@ant-design/icons-vue'
+import { ClockCircleTwoTone, ClockCircleOutlined, ScheduleTwoTone, ScheduleOutlined } from '@ant-design/icons-vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { windowWidthConstant } from '@/config/constants'
-import type { ChangeDateData } from '@/types/index'
+import type { ChangeDateData, Task } from '@/types/index'
 import { windowWidthKey } from '@/types/inject'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
@@ -84,6 +92,11 @@ const countDecimalPlaces = (number: number) => {
     const decimalPart = (number.toString().split('.')[1] || '').length
     return decimalPart
 }
+
+const taskList = ref<Task[]>([])
+const memo = ref<string>("")
+
+const taskAllDone = computed(() => taskList.value.every(task => task.isDone === true))
 
 onUpdated(async () => fetchDateData())
 onMounted(async () => fetchDateData())
