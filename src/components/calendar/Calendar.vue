@@ -10,6 +10,7 @@
     </template>
   </a-calendar>
   <OperationBar v-if="windowWidth < smWidth" :currentDate="date"></OperationBar>
+  <DisplayTab :current-date="date"></DisplayTab>
 </template>
 
 <script lang="ts" setup>
@@ -19,6 +20,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import DateButton from '@/components/calendar/DateButton.vue'
 import CalendarHeader from '@/components/calendar/CalendarHeader.vue'
 import OperationBar from '@/components/operationBar/OperationBar.vue'
+import DisplayTab from '@/components/displayTab/DisplayTab.vue'
 import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
 import { windowWidthKey } from '@/types/inject'
