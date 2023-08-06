@@ -30,7 +30,7 @@ async function dbHandler() {
             if (oldVersion == 0) {
                 const dateStore = db.createObjectStore('dates', { keyPath: "date" })
                 dateStore.createIndex('by-memo', 'memo')
-                const taskStore = db.createObjectStore('tasks')
+                const taskStore = db.createObjectStore('tasks', { keyPath: "id", autoIncrement: true })
                 taskStore.createIndex('by-description', 'description')
             }
         },

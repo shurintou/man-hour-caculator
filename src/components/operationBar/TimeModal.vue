@@ -29,7 +29,7 @@ import { reactive, watch } from 'vue'
 import { useDateStore } from '@/stores/date'
 import { useModeStore } from '@/stores/mode'
 import type { UnwrapRef } from 'vue'
-import type { TimeModalFormState, DateType, HolidayType, DateTable } from '@/types/index'
+import type { TimeModalFormState, DateTable } from '@/types/index'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 import { Form } from 'ant-design-vue'
@@ -145,14 +145,12 @@ const submitHandler = async (e: Event) => {
             else {
                 const addDto: DateTable = {
                     date: dateKey,
-                    type: "" as DateType,
-                    holidayType: "" as HolidayType,
                     taskIndexes: undefined,
                     startTime: formState.startTime,
                     endTime: formState.endTime,
                     restHours: formState.restHours,
                     scheduledWorkHours: formState.scheduledWorkHours,
-                    memo: "",
+                    memo: undefined,
                 }
                 await dbHandler.add("dates", addDto)
             }

@@ -1,14 +1,10 @@
 export interface Task extends CommonTaskProp { }
 
-export interface TaskTable extends CommonTaskProp { }
+export interface TaskTable extends CommonTaskProp { id: number }
 
-export type DateType = "workday" | "holiday" | ""
-
-export type HolidayType = "holiday" | "paid" | "sick" | "compensation" | "bereavement" | ""
-
-export interface EditModalFormState extends CommonEditProp {
-    date: string
-    tasks: Task[] | undefined
+export interface EditFormState extends CommonDateProp, CommonEditProp {
+    tasks: TaskTable[] | undefined
+    unsavedTasks: Task[] | undefined
 }
 
 export interface DateTable extends CommonDateProp, CommonEditProp {
@@ -27,9 +23,7 @@ interface CommonDateProp {
 }
 
 interface CommonEditProp {
-    type: DateType | undefined
-    holidayType: HolidayType | undefined
-    memo: string
+    memo: string | undefined
 }
 
 interface CommonTaskProp {
