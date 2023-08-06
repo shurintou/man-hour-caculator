@@ -1,8 +1,8 @@
 <template>
     <a-space wrap :size="isPcMode ? 'large' : 'middle'">
         <a-dropdown>
-            <a-button type="primary" :icon="h(PlusOutlined)">
-                <span v-if="isPcMode">Add</span>
+            <a-button :type="modeStore.currentMode === 'selectDate' ? 'primary' : ''" :icon="h(PlusOutlined)">
+                <span v-if="isPcMode">Select</span>
             </a-button>
             <template #overlay>
                 <a-menu>
@@ -11,11 +11,12 @@
                     <a-menu-item key="2"><a-button type="link" @click="selectDate('all')">All days</a-button></a-menu-item>
                     <a-menu-item key="3"><a-button type="link" @click="selectDate('holiday')">All
                             holidays</a-button></a-menu-item>
+                    <a-menu-item key="4"><a-button type="link" v-show="modeStore.currentMode === 'normal'"
+                            @click="modeStore.toggltSelect()">Custom</a-button></a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
-        <a-button type="primary" danger :icon="h(CloseCircleOutlined)" :disabled="!isCancelable"
-            @click="dateStore.$reset()">
+        <a-button type="primary" danger :icon="h(CloseCircleOutlined)" :disabled="!isCancelable" @click="cancelSelect">
             <span v-if="isPcMode">Cancel</span>
         </a-button>
         <a-button type="default" :icon="h(ClockCircleOutlined)" :disabled="!isCancelable"
@@ -37,6 +38,7 @@ import { getJapenseHoliday, isSameDay } from '@/utils/holidays'
 import TimeModal from './TimeModal.vue'
 import { isPcModeKey } from '@/types/inject'
 import { useDateStore } from '@/stores/date'
+import { useModeStore } from '@/stores/mode'
 
 const isTimeModalVisible = ref<boolean>(false)
 const isPcMode = inject(isPcModeKey, isPcModeRef)
@@ -46,6 +48,7 @@ const props = defineProps<{
 }>()
 
 const dateStore = useDateStore()
+const modeStore = useModeStore()
 
 const isCancelable = computed(() => dateStore.$state.selectedDateList.length > 0)
 
@@ -56,6 +59,7 @@ const selectDate = (selectType: "work" | "all" | "holiday") => {
     const firstDateOfCurrentMonth = props.currentDate.startOf('month')
     let allSelected = true
     const indexOfSelectedDatesInSelectedDateList: number[] = []
+    modeStore.currentMode = 'selectDate'
     for (let i = 0; i < daysInCurrentMonth; i++) {
         const date = firstDateOfCurrentMonth.add(i, 'day')
         let shouldPush = false
@@ -84,6 +88,11 @@ const selectDate = (selectType: "work" | "all" | "holiday") => {
         }
     }
     if (allSelected) dateStore.$patch(state => state.selectedDateList = state.selectedDateList.filter((date, index) => !indexOfSelectedDatesInSelectedDateList.includes(index)))
+}
+
+const cancelSelect = () => {
+    dateStore.$reset()
+    if (modeStore.currentMode === 'selectDate') modeStore.initialize()
 }
 
 </script>

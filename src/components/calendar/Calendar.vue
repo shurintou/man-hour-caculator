@@ -23,12 +23,14 @@ import OperationBar from '@/components/operationBar/OperationBar.vue'
 import DisplayTab from '@/components/displayTab/DisplayTab.vue'
 import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
+import { useModeStore } from '@/stores/mode'
 import { windowWidthKey } from '@/types/inject'
 import type { ChangeDateData } from '@/types/index'
 import { windowWidthConstant } from '@/config/constants'
 
 const date = ref<Dayjs>(dayjs())
 const dateStore = useDateStore()
+const modeStore = useModeStore()
 const windowWidth = inject(windowWidthKey, windowWidthRef)
 const { smWidth } = windowWidthConstant
 
@@ -36,13 +38,21 @@ const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.val
 
 const changeDate = (changeDateData: ChangeDateData) => {
   date.value = changeDateData.newDate
-  if (changeDateData.clearAll) dateStore.$reset()
+  if (changeDateData.clearAll) {
+    dateStore.$reset()
+    modeStore.initialize()
+  }
 }
 
 const selectDate = (selectedDate: Dayjs) => {
   const oldIndex = dateStore.selectedDateList.findIndex(old => isSameDay(old, selectedDate))
   if (oldIndex === -1) {
-    dateStore.$patch(state => state.selectedDateList.push(selectedDate))
+    if (modeStore.currentMode === 'selectDate') {
+      dateStore.$patch(state => state.selectedDateList.push(selectedDate))
+    }
+    else if (modeStore.currentMode === 'normal') {
+      dateStore.$patch(state => state.selectedDateList[0] = selectedDate)
+    }
   }
   else {
     dateStore.$patch(state => state.selectedDateList.splice(oldIndex, 1))

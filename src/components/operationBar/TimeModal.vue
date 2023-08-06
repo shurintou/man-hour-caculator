@@ -27,6 +27,7 @@
 <script lang="ts" setup>
 import { reactive, watch } from 'vue'
 import { useDateStore } from '@/stores/date'
+import { useModeStore } from '@/stores/mode'
 import type { UnwrapRef } from 'vue'
 import type { TimeModalFormState, DateType, HolidayType, DateTable } from '@/types/index'
 import emitter from '@/utils/emitter'
@@ -81,6 +82,7 @@ const props = defineProps<{
 }>()
 
 const dateStore = useDateStore()
+const modeStore = useModeStore()
 
 watch(() => props.isModalVisible, async (newVal) => {
     if (newVal === true) {
@@ -158,6 +160,7 @@ const submitHandler = async (e: Event) => {
         })
         await transaction.done
         dateStore.$reset()
+        modeStore.initialize()
         changeModalVisible(false)
     }
 }
