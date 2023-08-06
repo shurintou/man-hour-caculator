@@ -13,7 +13,7 @@ export interface EditModalFormState extends CommonEditProp {
 
 export interface DateTable extends CommonDateProp, CommonEditProp {
     date: string,
-    tasks: number[] | undefined
+    taskIndexes: number[] | undefined
 }
 
 export interface TimeModalFormState extends CommonDateProp { }

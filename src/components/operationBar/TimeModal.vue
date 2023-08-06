@@ -147,7 +147,7 @@ const submitHandler = async (e: Event) => {
                     date: dateKey,
                     type: "" as DateType,
                     holidayType: "" as HolidayType,
-                    tasks: undefined,
+                    taskIndexes: undefined,
                     startTime: formState.startTime,
                     endTime: formState.endTime,
                     restHours: formState.restHours,
