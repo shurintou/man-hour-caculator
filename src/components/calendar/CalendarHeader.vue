@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { h, inject } from 'vue'
 import { windowWidthRef } from '@/main'
-import OperationBar from './OperationBar.vue'
+import OperationBar from '@/components/operationBar/OperationBar.vue'
 import { LeftOutlined, RightOutlined, DoubleLeftOutlined, DoubleRightOutlined, EnvironmentOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthKey } from '@/types/inject'
