@@ -25,7 +25,6 @@ import { isSameDay } from '@/utils/holidays'
 import { useDateStore } from '@/stores/date'
 import { useModeStore } from '@/stores/mode'
 import { windowWidthKey } from '@/types/inject'
-import type { ChangeDateData } from '@/types/index'
 import { windowWidthConstant } from '@/config/constants'
 
 const date = ref<Dayjs>(dayjs())
@@ -36,12 +35,12 @@ const { smWidth } = windowWidthConstant
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
 
-const changeDate = (changeDateData: ChangeDateData) => {
-  date.value = changeDateData.newDate
-  if (changeDateData.clearAll) {
+const changeDate = (newDate: Dayjs) => {
+  if (date.value.year() !== newDate.year() || date.value.month() !== newDate.month()) {
     dateStore.$reset()
     modeStore.initialize()
   }
+  date.value = newDate
 }
 
 const selectDate = (selectedDate: Dayjs) => {
