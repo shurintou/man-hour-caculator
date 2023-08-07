@@ -4,19 +4,19 @@
         <a-form :model="formState">
             <a-form-item label="Scheduled work hours" :labelCol="labelColStyle" v-bind="validateInfos.scheduledWorkHours">
                 <a-input-number type="number" :style="inputStyle" v-model:value="formState.scheduledWorkHours"
-                    :addon-after="inputAddonAfter" :step="inputStep" />
+                    :addon-after="timeInputAddonAfter" :step="timeInputStep" />
             </a-form-item>
             <a-form-item label="Start time" :labelCol="labelColStyle" v-bind="validateInfos.startTime">
-                <a-time-picker v-model:value="formState.startTime" valueFormat="HHmm" format="HH:mm" :inputReadOnly="true"
-                    :minuteStep="minuteStep" />
+                <a-time-picker v-model:value="formState.startTime" :valueFormat="timeValueFormat"
+                    :format="timeDisplayFormat" :inputReadOnly="true" :timeMinuteStep="timeMinuteStep" />
             </a-form-item>
             <a-form-item label="End time" :labelCol="labelColStyle" v-bind="validateInfos.endTime">
-                <a-time-picker v-model:value="formState.endTime" valueFormat="HHmm" format="HH:mm" :inputReadOnly="true"
-                    :minuteStep="minuteStep" />
+                <a-time-picker v-model:value="formState.endTime" :valueFormat="timeValueFormat" :format="timeDisplayFormat"
+                    :inputReadOnly="true" :timeMinuteStep="timeMinuteStep" />
             </a-form-item>
             <a-form-item label="Rest hours" :labelCol="labelColStyle" v-bind="validateInfos.restHours">
                 <a-input-number type="number" :style="inputStyle" v-model:value="formState.restHours"
-                    :addon-after="inputAddonAfter" :step="inputStep" />
+                    :addon-after="timeInputAddonAfter" :step="timeInputStep" />
             </a-form-item>
         </a-form>
         <a-alert v-if="dateStore.selectedDateList.length > 1" message="You are going to update multiple dates."
@@ -33,45 +33,11 @@ import type { TimeModalFormState, DateTable } from '@/types/index'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 import { Form } from 'ant-design-vue'
+import { timeModalRuleRef, timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat } from '@/utils/rules'
 
-const inputAddonAfter = "hour"
-const inputStep = 0.01
 const inputStyle = { width: '120px' }
 const labelColStyle = { lg: { offset: 2 } }
-const minuteStep = 5
 const useForm = Form.useForm
-
-const rulesRef = reactive({
-    scheduledWorkHours: [
-        {
-            pattern: /^(?:\d|1\d|2[0-3])(\.\d{1,2})?$|^24(\.00?)?$/,
-            message: 'Hour should be 0 to 24',
-            trigger: 'blur',
-        },
-    ],
-    startTime: [
-        {
-            pattern: /^([0-1][0-9]|2[0-3])[0-5][0-9]$/,
-            message: 'Format is not valid',
-            trigger: 'blur',
-        },
-    ],
-    endTime: [
-        {
-            pattern: /^([0-1][0-9]|2[0-3])[0-5][0-9]$/,
-            message: 'Format is not valid',
-            trigger: 'blur',
-        },
-    ],
-    restHours: [
-        {
-            pattern: /^(?:\d|1\d|2[0-3])(\.\d{1,2})?$|^24(\.00?)?$/,
-            message: 'Hour should be 0 to 24',
-            trigger: 'blur',
-        },
-    ],
-})
-
 
 const emit = defineEmits<{
     (e: 'changeTimeModalVisible', flg: boolean): void
@@ -115,7 +81,7 @@ const formState: UnwrapRef<TimeModalFormState> = reactive({
     restHours: undefined,
 })
 
-const { validate, validateInfos } = useForm(formState, rulesRef)
+const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
 
 const changeModalVisible = (flg: boolean) => {
