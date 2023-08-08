@@ -80,6 +80,11 @@ const selectDate = (selectedDate: Dayjs) => {
   }
 }
 
+.ant-picker-cell-selected {
+  background-color: #f2f4f7;
+  border-radius: 2px;
+}
+
 .ant-picker-cell-today {
   border-top-style: solid;
   border-top-width: 2px;
