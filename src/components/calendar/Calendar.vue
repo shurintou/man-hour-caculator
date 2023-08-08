@@ -10,7 +10,7 @@
     </template>
   </a-calendar>
   <OperationBar v-if="windowWidth < smWidth" :currentDate="date"></OperationBar>
-  <DisplayTab :current-date="date"></DisplayTab>
+  <DisplayTab :current-date="date" :changeDate="changeDate"></DisplayTab>
 </template>
 
 <script lang="ts" setup>
