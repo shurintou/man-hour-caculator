@@ -1,5 +1,5 @@
 <template>
-    <a-tabs v-model:activeKey="showWhich">
+    <a-tabs v-model:activeKey="showWhich" size="large">
         <a-tab-pane key="date" :tab="dateTabName"> </a-tab-pane>
         <a-tab-pane key="month" :tab="monthTabName"></a-tab-pane>
     </a-tabs>
