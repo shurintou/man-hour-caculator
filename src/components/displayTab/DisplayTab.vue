@@ -7,14 +7,19 @@
             <a-tab-pane :tab="date.format('YYYY-MM-DD')" :closable="tabClosable"
                 :active="date.format('YYYYMMDD') === showWhich"> </a-tab-pane>
         </template>
-        <a-tab-pane key="month" :tab="monthTabName"></a-tab-pane>
+        <template #rightExtra>
+            <a-button class="tabs-extra-button" @click="showMonthReport" :icon="h(BarChartOutlined)">
+                <span v-if="isPcMode"> {{ monthTabName + ' report' }} </span>
+            </a-button>
+        </template>
     </a-tabs>
     <DateDisplayer :current-date="currentDate" v-if="showWhich !== 'month'"></DateDisplayer>
     <MonthDisplayer :current-date="currentDate" v-else></MonthDisplayer>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, inject, watch } from 'vue'
+import { h, ref, computed, inject, watch } from 'vue'
+import { BarChartOutlined } from '@ant-design/icons-vue'
 import DateDisplayer from '@/components/displayTab/DateDisplayer.vue'
 import MonthDisplayer from '@/components/displayTab/MonthDisplayer.vue'
 import dayjs, { type Dayjs } from 'dayjs'
@@ -37,10 +42,17 @@ const changeTab = (key: string) => {
     props.changeDate(dayjs(key, 'YYYYMMDD'))
     showWhich.value = key
 }
+const showMonthReport = () => showWhich.value = 'month'
 const editTab = (targetKey: string | MouseEvent, action: string) => {
     if (action === 'remove') {
         const index = dateStore.selectedDateList.findIndex(date => date.format('YYYYMMDD') === targetKey)
-        dateStore.$patch(state => state.selectedDateList.splice(index, 1))
+        const displayIndex = displayTabDateList().findIndex(date => date.format('YYYYMMDD') === targetKey)
+        if (index >= 0) {
+            dateStore.$patch(state => state.selectedDateList.splice(index, 1))
+            let nextIndex = 0
+            if (displayIndex > 1) nextIndex = displayIndex - 1
+            showWhich.value = displayTabDateList()[nextIndex].format('YYYYMMDD')
+        }
     }
 }
 
@@ -54,5 +66,9 @@ watch(() => props.currentDate, (newVal) => showWhich.value = newVal.format('YYYY
 :where(.css-dev-only-do-not-override-eq3tly).ant-input-disabled,
 :where(.css-dev-only-do-not-override-eq3tly).ant-input[disabled] {
     color: #000000;
+}
+
+.tabs-extra-button {
+    margin-left: 6px
 }
 </style>
