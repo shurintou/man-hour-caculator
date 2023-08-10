@@ -102,7 +102,7 @@ const submitHandler = async (e: Event) => {
                 type DateInfoModalFormStateKey = keyof typeof storedDateInfo
                 Object.keys(formState).forEach((key) => {
                     const value = formState[key as TimeModalFormStateKey]
-                    if (value && key in storedDateInfo) {
+                    if (key in storedDateInfo) {
                         storedDateInfo[key as DateInfoModalFormStateKey] = value as never
                     }
                 })
