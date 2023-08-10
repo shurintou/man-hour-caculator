@@ -8,11 +8,11 @@
             </a-form-item>
             <a-form-item label="Start time" :labelCol="labelColStyle" v-bind="validateInfos.startTime">
                 <a-time-picker v-model:value="formState.startTime" :valueFormat="timeValueFormat"
-                    :format="timeDisplayFormat" :inputReadOnly="true" :timeMinuteStep="timeMinuteStep" />
+                    :format="timeDisplayFormat" :inputReadOnly="true" :minuteStep="timeMinuteStep" />
             </a-form-item>
             <a-form-item label="End time" :labelCol="labelColStyle" v-bind="validateInfos.endTime">
                 <a-time-picker v-model:value="formState.endTime" :valueFormat="timeValueFormat" :format="timeDisplayFormat"
-                    :inputReadOnly="true" :timeMinuteStep="timeMinuteStep" />
+                    :inputReadOnly="true" :minuteStep="timeMinuteStep" />
             </a-form-item>
             <a-form-item label="Rest hours" :labelCol="labelColStyle" v-bind="validateInfos.restHours">
                 <a-input-number type="number" :style="inputStyle" v-model:value="formState.restHours"
