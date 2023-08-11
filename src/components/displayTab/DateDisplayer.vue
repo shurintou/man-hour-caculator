@@ -1,5 +1,6 @@
 <template>
     <a-form :layout="layout" :model="formState">
+        <a-divider orientation="left">Time</a-divider>
         <a-row>
             <a-col :md="{ span: 24 }" :lg="{ offset: lgOffset, span: 5 }" :xl="{ offset: xlOffset, span: 5 }">
                 <a-form-item label="Scheduled work hours" v-bind="validateInfos.scheduledWorkHours">
@@ -29,11 +30,12 @@
         <a-row>
             <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
                 <a-form-item label="memo">
-                    <a-textarea v-model:value="formState.memo" :style="textAreaStyle" placeholder="'take down some memos'"
+                    <a-textarea v-model:value="formState.memo" :style="textAreaStyle" placeholder="take down some memos"
                         :rows="2" />
                 </a-form-item>
             </a-col>
         </a-row>
+        <a-divider orientation="left">Tasks</a-divider>
         <a-row v-for="task in formState.tasks" :key="task.id" style="display: flex;" align="baseline">
             <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
                 <a-space>
@@ -57,15 +59,6 @@
                     <MinusCircleOutlined v-if="!task.isDelete" @click="removeTask(task)" />
                     <PauseCircleOutlined v-else @click="removeTask(task)" />
                 </a-space>
-            </a-col>
-        </a-row>
-        <a-row>
-            <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
-                <a-form-item>
-                    <a-button type="dashed" block @click="addUnsavedTask">
-                        <PlusOutlined /> Add Task
-                    </a-button>
-                </a-form-item>
             </a-col>
         </a-row>
         <a-row v-for="(task, index) in formState.unsavedTasks" :key="index" style="display: flex;" align="baseline">
@@ -92,6 +85,15 @@
                         <MinusCircleOutlined />
                     </a-popconfirm>
                 </a-space>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
+                <a-form-item>
+                    <a-button type="dashed" block @click="addUnsavedTask">
+                        <PlusOutlined /> Add Task
+                    </a-button>
+                </a-form-item>
             </a-col>
         </a-row>
         <a-row>
