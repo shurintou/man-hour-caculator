@@ -52,7 +52,8 @@
                             :format="timeDisplayFormat" :inputReadOnly="true"
                             :placeholder="isPcMode ? 'Select time' : ''" />
                     </a-form-item>
-                    <a-form-item label="description">
+                    <a-form-item label="description" :rules="{ required: true }"
+                        :help="task.validated ? '' : 'Missing description'" :validateStatus="task.validated ? '' : 'error'">
                         <a-input v-model:value="task.description" show-count :maxlength="taskMaxLength"
                             :disabled="task.isDelete" />
                     </a-form-item>
@@ -77,7 +78,8 @@
                             :format="timeDisplayFormat" :inputReadOnly="true"
                             :placeholder="isPcMode ? 'Select time' : ''" />
                     </a-form-item>
-                    <a-form-item label="description">
+                    <a-form-item label="description" :rules="{ required: true }"
+                        :help="task.validated ? '' : 'Missing description'" :validateStatus="task.validated ? '' : 'error'">
                         <a-input v-model:value="task.description" show-count :maxlength="taskMaxLength" />
                     </a-form-item>
                     <a-popconfirm title="Are you sure delete this task?" ok-text="Yes" cancel-text="No"
@@ -165,7 +167,7 @@ const fetchData = async () => {
             const storedTaskList: TaskForm[] = []
             for (const index of taskIndexes) {
                 const storedTaskInfo = await dbHandler.get("tasks", index)
-                if (storedTaskInfo) storedTaskList.push({ isDelete: false, ...storedTaskInfo })
+                if (storedTaskInfo) storedTaskList.push({ isDelete: false, validated: true, ...storedTaskInfo })
             }
             formState.tasks = storedTaskList
         }
@@ -186,7 +188,7 @@ watch(() => props.currentDate, async (newVal, oldVal) => {
 
 const removeTask = (task: TaskForm) => task.isDelete = !task.isDelete
 
-const addUnsavedTask = () => { formState.unsavedTasks.push({ startTime: undefined, endTime: undefined, description: undefined, isDone: false }) }
+const addUnsavedTask = () => { formState.unsavedTasks.push({ validated: true, startTime: undefined, endTime: undefined, description: undefined, isDone: false }) }
 const removeUnsavedTask = (index: number) => formState.unsavedTasks.splice(index, 1)
 
 const submitEditForm = async () => {
@@ -199,8 +201,14 @@ const submitEditForm = async () => {
         let unsavedTasksIndex: number[] = []
         if (formState.unsavedTasks.length > 0) {
             for (const task of formState.unsavedTasks) {
-                const key = await transaction.objectStore("tasks").add({ ...task })
-                unsavedTasksIndex.push(key)
+                if (task.description && task.description.length > 0) {
+                    const key = await transaction.objectStore("tasks").add({ ...task })
+                    unsavedTasksIndex.push(key)
+                }
+                else {
+                    task.validated = false
+                    return
+                }
             }
         }
         if (storedDateInfo) {
@@ -222,9 +230,15 @@ const submitEditForm = async () => {
                         }
                     }
                     else {
-                        await transaction.objectStore("tasks").put(
-                            { id: task.id, isDone: task.isDone, startTime: task.startTime, endTime: task.endTime, description: task.description }
-                        )
+                        if (task.description && task.description.length > 0) {
+                            await transaction.objectStore("tasks").put(
+                                { id: task.id, isDone: task.isDone, startTime: task.startTime, endTime: task.endTime, description: task.description }
+                            )
+                        }
+                        else {
+                            task.validated = false
+                            return
+                        }
                     }
                 }
             }
