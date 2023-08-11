@@ -38,25 +38,24 @@
             <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
                 <a-space>
                     <a-form-item label="done">
-                        <a-checkbox v-model:checked="task.isDone">Done</a-checkbox>
+                        <a-checkbox v-model:checked="task.isDone" :disabled="task.isDelete">Done</a-checkbox>
                     </a-form-item>
                     <a-form-item label="Start time" v-bind="validateInfos.startTime">
                         <a-time-picker v-model:value="task.startTime" :valueFormat="timeValueFormat"
-                            :format="timeDisplayFormat" :inputReadOnly="true"
+                            :disabled="task.isDelete" :format="timeDisplayFormat" :inputReadOnly="true"
                             :placeholder="isPcMode ? 'Select time' : ''" />
                     </a-form-item>
                     <a-form-item label="End time" v-bind="validateInfos.endTime">
-                        <a-time-picker v-model:value="task.endTime" :valueFormat="timeValueFormat"
+                        <a-time-picker v-model:value="task.endTime" :valueFormat="timeValueFormat" :disabled="task.isDelete"
                             :format="timeDisplayFormat" :inputReadOnly="true"
                             :placeholder="isPcMode ? 'Select time' : ''" />
                     </a-form-item>
                     <a-form-item label="description">
-                        <a-input v-model:value="task.description" show-count :maxlength="taskMaxLength" />
+                        <a-input v-model:value="task.description" show-count :maxlength="taskMaxLength"
+                            :disabled="task.isDelete" />
                     </a-form-item>
-                    <a-popconfirm title="Are you sure delete this task?" ok-text="Yes" cancel-text="No"
-                        @confirm="removeTask(task.id)">
-                        <MinusCircleOutlined />
-                    </a-popconfirm>
+                    <MinusCircleOutlined v-if="!task.isDelete" @click="removeTask(task)" />
+                    <PauseCircleOutlined v-else @click="removeTask(task)" />
                 </a-space>
             </a-col>
         </a-row>
@@ -110,12 +109,12 @@ import { reactive, computed, inject, watch, type UnwrapRef } from 'vue'
 import type { Dayjs } from 'dayjs'
 import { isPcModeKey, windowWidthKey, } from '@/types/inject'
 import { windowWidthRef, isPcModeRef } from '@/main'
-import type { EditFormState, TaskTable } from '@/types/index'
+import type { EditFormState, TaskForm } from '@/types/index'
 import { timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat } from '@/utils/rules'
 import { Form } from 'ant-design-vue'
 import { windowWidthConstant } from '@/config/constants'
 import db from '@/utils/datebase'
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons-vue'
+import { PlusOutlined, MinusCircleOutlined, PauseCircleOutlined } from '@ant-design/icons-vue'
 import { useModeStore } from '@/stores/mode'
 import { timeModalRuleRef } from '@/utils/rules'
 
@@ -164,10 +163,10 @@ const fetchData = async () => {
         formState.memo = memo
         formState.tasks = undefined
         if (taskIndexes && taskIndexes.length > 0) {
-            const storedTaskList: TaskTable[] = []
+            const storedTaskList: TaskForm[] = []
             taskIndexes.forEach(async index => {
                 const storedTaskInfo = await dbHandler.get("tasks", index)
-                if (storedTaskInfo) storedTaskList.push(storedTaskInfo)
+                if (storedTaskInfo) storedTaskList.push({ isDelete: false, ...storedTaskInfo })
             })
             formState.tasks = storedTaskList
         }
@@ -187,11 +186,7 @@ watch(() => props.currentDate, async (newVal, oldVal) => {
     if (!oldVal || newVal.format('YYYYMMDD') !== oldVal.format('YYYYMMDD')) await fetchData()
 }, { immediate: true })
 
-const removeTask = async (id: number) => {
-    const dbHandler = await db
-    await dbHandler.delete('tasks', id)
-    await fetchData()
-}
+const removeTask = (task: TaskForm) => task.isDelete = !task.isDelete
 
 const addUnsavedTask = () => { formState.unsavedTasks?.push({ startTime: undefined, endTime: undefined, description: undefined, isDone: false }) }
 const removeUnsavedTask = (index: number) => formState.unsavedTasks?.splice(index, 1)
