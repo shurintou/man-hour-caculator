@@ -124,6 +124,7 @@ const submitHandler = async (e: Event) => {
             await transaction.done
             dateStore.$reset()
             modeStore.initialize()
+            message.success('update succeeded!')
         }
         catch (e: any) {
             console.error(e)

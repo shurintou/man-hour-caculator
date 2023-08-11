@@ -1,5 +1,5 @@
 <template>
-    <a-form :layout="layout" :model="formState">
+    <a-form ref="formRef" :layout="layout" :model="formState">
         <a-divider orientation="left">Time</a-divider>
         <a-row>
             <a-col :md="{ span: 24 }" :lg="{ offset: lgOffset, span: 5 }" :xl="{ offset: xlOffset, span: 5 }">
@@ -109,7 +109,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, computed, inject, watch, type UnwrapRef } from 'vue'
+import { ref, reactive, computed, inject, watch, type UnwrapRef } from 'vue'
 import type { Dayjs } from 'dayjs'
 import { isPcModeKey, windowWidthKey, } from '@/types/inject'
 import { windowWidthRef, isPcModeRef } from '@/main'
@@ -122,6 +122,8 @@ import { PlusOutlined, MinusCircleOutlined, PauseCircleOutlined } from '@ant-des
 import { timeModalRuleRef } from '@/utils/rules'
 import emitter from '@/utils/emitter'
 
+
+const formRef = ref()
 const inputStyle = { width: '120px' }
 const textAreaStyle = { width: '1200px' }
 const lgOffset = 1
@@ -195,6 +197,7 @@ const submitEditForm = async () => {
     await validate()
     const dbHandler = await db
     const transaction = dbHandler.transaction(['dates', 'tasks'], 'readwrite')
+    let shouldSubmit = true
     try {
         const dateKey = props.currentDate.format("YYYYMMDD")
         const storedDateInfo = await transaction.objectStore("dates").get(dateKey)
@@ -207,7 +210,7 @@ const submitEditForm = async () => {
                 }
                 else {
                     task.validated = false
-                    return
+                    shouldSubmit = false
                 }
             }
         }
@@ -237,7 +240,7 @@ const submitEditForm = async () => {
                         }
                         else {
                             task.validated = false
-                            return
+                            shouldSubmit = false
                         }
                     }
                 }
@@ -257,10 +260,16 @@ const submitEditForm = async () => {
             }
             await transaction.objectStore("dates").add(addDto)
         }
+        if (!shouldSubmit) {
+            transaction.abort()
+            return
+        }
         emitter.emit(dateKey)
         formState.unsavedTasks = []
         await transaction.done
         await fetchData()
+        message.success('update succeeded!')
+        formRef.value.resetFields()
     }
     catch (e: any) {
         console.error(e)
