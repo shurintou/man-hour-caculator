@@ -32,7 +32,7 @@ import type { UnwrapRef } from 'vue'
 import type { TimeModalFormState, DateTable } from '@/types/index'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
-import { Form } from 'ant-design-vue'
+import { Form, message } from 'ant-design-vue'
 import { timeModalRuleRef, timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat } from '@/utils/rules'
 
 const inputStyle = { width: '120px' }
@@ -54,10 +54,8 @@ watch(() => props.isModalVisible, async (newVal) => {
     if (newVal === true) {
         if (dateStore.$state.selectedDateList.length === 1) {
             const dbHandler = await db
-            const transaction = dbHandler.transaction('dates', 'readwrite')
             const dateKey = dateStore.$state.selectedDateList[0].format("YYYYMMDD")
             const storedDateInfo = await dbHandler.get("dates", dateKey)
-            await transaction.done
             if (storedDateInfo) {
                 const { startTime, endTime, scheduledWorkHours, restHours } = storedDateInfo
                 formState.startTime = startTime
@@ -94,37 +92,44 @@ const submitHandler = async (e: Event) => {
     if (valid) {
         const dbHandler = await db
         const transaction = dbHandler.transaction('dates', 'readwrite')
-        dateStore.$state.selectedDateList.forEach(async (selectedDate) => {
-            const dateKey = selectedDate.format("YYYYMMDD")
-            const storedDateInfo = await dbHandler.get("dates", dateKey)
-            if (storedDateInfo) {
-                type TimeModalFormStateKey = keyof typeof formState
-                type DateInfoModalFormStateKey = keyof typeof storedDateInfo
-                Object.keys(formState).forEach((key) => {
-                    const value = formState[key as TimeModalFormStateKey]
-                    if (key in storedDateInfo) {
-                        storedDateInfo[key as DateInfoModalFormStateKey] = value as never
-                    }
-                })
-                await dbHandler.put("dates", storedDateInfo)
-            }
-            else {
-                const addDto: DateTable = {
-                    date: dateKey,
-                    taskIndexes: undefined,
-                    startTime: formState.startTime,
-                    endTime: formState.endTime,
-                    restHours: formState.restHours,
-                    scheduledWorkHours: formState.scheduledWorkHours,
-                    memo: undefined,
+        try {
+            for (const selectedDate of dateStore.$state.selectedDateList) {
+                const dateKey = selectedDate.format("YYYYMMDD")
+                const storedDateInfo = await transaction.objectStore("dates").get(dateKey)
+                if (storedDateInfo) {
+                    type TimeModalFormStateKey = keyof typeof formState
+                    type DateInfoModalFormStateKey = keyof typeof storedDateInfo
+                    Object.keys(formState).forEach((key) => {
+                        const value = formState[key as TimeModalFormStateKey]
+                        if (key in storedDateInfo) {
+                            storedDateInfo[key as DateInfoModalFormStateKey] = value as never
+                        }
+                    })
+                    await transaction.objectStore("dates").put(storedDateInfo)
                 }
-                await dbHandler.add("dates", addDto)
+                else {
+                    const addDto: DateTable = {
+                        date: dateKey,
+                        taskIndexes: undefined,
+                        startTime: formState.startTime,
+                        endTime: formState.endTime,
+                        restHours: formState.restHours,
+                        scheduledWorkHours: formState.scheduledWorkHours,
+                        memo: undefined,
+                    }
+                    await transaction.objectStore("dates").add(addDto)
+                }
+                emitter.emit(dateKey)
             }
-            emitter.emit(dateKey)
-        })
-        await transaction.done
-        dateStore.$reset()
-        modeStore.initialize()
+            await transaction.done
+            dateStore.$reset()
+            modeStore.initialize()
+        }
+        catch (e: any) {
+            console.error(e)
+            message.error(e.message)
+            transaction.abort
+        }
         changeModalVisible(false)
     }
 }

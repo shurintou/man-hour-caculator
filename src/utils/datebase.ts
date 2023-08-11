@@ -2,9 +2,6 @@ import { openDB } from 'idb'
 import type { DBSchema } from 'idb'
 import type { TaskTable, DateTable } from '@/types/index'
 import { message } from 'ant-design-vue'
-const [messageApi] = message.useMessage()
-
-
 
 interface LocalDb extends DBSchema {
     'dates': {
@@ -36,11 +33,11 @@ async function dbHandler() {
         },
         blocked() {
             db.close()
-            messageApi.error('Another page is conflicting with current, please close it and try again.')
+            message.error('Another page is conflicting with current, please close it and try again.')
         },
         blocking() {
             db.close()
-            messageApi.warning('Database is outdated, please reload the page.')
+            message.warning('Database is outdated, please reload the page.')
         },
     })
 
