@@ -227,9 +227,9 @@ const submitEditForm = async () => {
                 for (const task of formState.tasks) {
                     const index = storedDateInfo.taskIndexes?.findIndex(taskIndex => taskIndex === task.id)
                     if (task.isDelete) {
-                        if (index) {
+                        if (index !== undefined && index >= 0) {
                             storedDateInfo.taskIndexes?.splice(index, 1)
-                            await transaction.objectStore("tasks").delete(index)
+                            if (task.id) await transaction.objectStore("tasks").delete(task.id)
                         }
                     }
                     else {
