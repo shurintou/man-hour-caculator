@@ -1,12 +1,12 @@
 export interface Task extends CommonTaskProp { }
 
-export interface TaskTable extends CommonTaskProp { id: number }
+export interface TaskTable extends CommonTaskProp { id?: number }
 
 export interface TaskForm extends TaskTable { isDelete: boolean }
 
 export interface EditFormState extends CommonDateProp, CommonEditProp {
     tasks: TaskForm[] | undefined
-    unsavedTasks: Task[] | undefined
+    unsavedTasks: Task[]
 }
 
 export interface DateTable extends CommonDateProp, CommonEditProp {

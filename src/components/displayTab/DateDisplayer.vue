@@ -109,14 +109,14 @@ import { reactive, computed, inject, watch, type UnwrapRef } from 'vue'
 import type { Dayjs } from 'dayjs'
 import { isPcModeKey, windowWidthKey, } from '@/types/inject'
 import { windowWidthRef, isPcModeRef } from '@/main'
-import type { EditFormState, TaskForm } from '@/types/index'
+import type { EditFormState, TaskForm, DateTable } from '@/types/index'
 import { timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat } from '@/utils/rules'
-import { Form } from 'ant-design-vue'
+import { Form, message } from 'ant-design-vue'
 import { windowWidthConstant } from '@/config/constants'
 import db from '@/utils/datebase'
 import { PlusOutlined, MinusCircleOutlined, PauseCircleOutlined } from '@ant-design/icons-vue'
-import { useModeStore } from '@/stores/mode'
 import { timeModalRuleRef } from '@/utils/rules'
+import emitter from '@/utils/emitter'
 
 const inputStyle = { width: '120px' }
 const textAreaStyle = { width: '1200px' }
@@ -145,13 +145,10 @@ const formState: UnwrapRef<EditFormState> = reactive({
     memo: undefined,
 })
 
-const modeStore = useModeStore()
-
 const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
 const fetchData = async () => {
     const dbHandler = await db
-    const transaction = dbHandler.transaction(['dates', 'tasks'], 'readwrite')
     const dateKey = props.currentDate.format("YYYYMMDD")
     const storedDateInfo = await dbHandler.get("dates", dateKey)
     if (storedDateInfo) {
@@ -164,10 +161,10 @@ const fetchData = async () => {
         formState.tasks = undefined
         if (taskIndexes && taskIndexes.length > 0) {
             const storedTaskList: TaskForm[] = []
-            taskIndexes.forEach(async index => {
+            for (const index of taskIndexes) {
                 const storedTaskInfo = await dbHandler.get("tasks", index)
                 if (storedTaskInfo) storedTaskList.push({ isDelete: false, ...storedTaskInfo })
-            })
+            }
             formState.tasks = storedTaskList
         }
     }
@@ -179,7 +176,6 @@ const fetchData = async () => {
         formState.memo = undefined
         formState.tasks = undefined
     }
-    await transaction.done
 }
 
 watch(() => props.currentDate, async (newVal, oldVal) => {
@@ -188,11 +184,73 @@ watch(() => props.currentDate, async (newVal, oldVal) => {
 
 const removeTask = (task: TaskForm) => task.isDelete = !task.isDelete
 
-const addUnsavedTask = () => { formState.unsavedTasks?.push({ startTime: undefined, endTime: undefined, description: undefined, isDone: false }) }
-const removeUnsavedTask = (index: number) => formState.unsavedTasks?.splice(index, 1)
+const addUnsavedTask = () => { formState.unsavedTasks.push({ startTime: undefined, endTime: undefined, description: undefined, isDone: false }) }
+const removeUnsavedTask = (index: number) => formState.unsavedTasks.splice(index, 1)
 
 const submitEditForm = async () => {
     await validate()
+    const dbHandler = await db
+    const transaction = dbHandler.transaction(['dates', 'tasks'], 'readwrite')
+    try {
+        const dateKey = props.currentDate.format("YYYYMMDD")
+        const storedDateInfo = await transaction.objectStore("dates").get(dateKey)
+        let unsavedTasksIndex: number[] = []
+        if (formState.unsavedTasks.length > 0) {
+            for (const task of formState.unsavedTasks) {
+                const key = await transaction.objectStore("tasks").add({ ...task })
+                unsavedTasksIndex.push(key)
+            }
+        }
+        if (storedDateInfo) {
+            type TimeModalFormStateKey = keyof typeof formState
+            type DateInfoModalFormStateKey = keyof typeof storedDateInfo
+            Object.keys(formState).forEach((key) => {
+                const value = formState[key as TimeModalFormStateKey]
+                if (key in storedDateInfo) {
+                    storedDateInfo[key as DateInfoModalFormStateKey] = value as never
+                }
+            })
+            if (formState.tasks) {
+                for (const task of formState.tasks) {
+                    const index = storedDateInfo.taskIndexes?.findIndex(taskIndex => taskIndex === task.id)
+                    if (task.isDelete) {
+                        if (index) {
+                            storedDateInfo.taskIndexes?.splice(index, 1)
+                            await transaction.objectStore("tasks").delete(index)
+                        }
+                    }
+                    else {
+                        await transaction.objectStore("tasks").put(
+                            { id: task.id, isDone: task.isDone, startTime: task.startTime, endTime: task.endTime, description: task.description }
+                        )
+                    }
+                }
+            }
+            storedDateInfo.taskIndexes = storedDateInfo.taskIndexes?.concat(unsavedTasksIndex)
+            await transaction.objectStore("dates").put(storedDateInfo)
+        }
+        else {
+            const addDto: DateTable = {
+                date: dateKey,
+                taskIndexes: unsavedTasksIndex,
+                startTime: formState.startTime,
+                endTime: formState.endTime,
+                restHours: formState.restHours,
+                scheduledWorkHours: formState.scheduledWorkHours,
+                memo: formState.memo,
+            }
+            await transaction.objectStore("dates").add(addDto)
+        }
+        emitter.emit(dateKey)
+        formState.unsavedTasks = []
+        await transaction.done
+        await fetchData()
+    }
+    catch (e: any) {
+        console.error(e)
+        message.error(e.message)
+        transaction.abort()
+    }
 }
 
 </script>
