@@ -151,7 +151,7 @@ const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
 const fetchData = async () => {
     const dbHandler = await db
-    const transaction = dbHandler.transaction('dates', 'readwrite')
+    const transaction = dbHandler.transaction(['dates', 'tasks'], 'readwrite')
     const dateKey = props.currentDate.format("YYYYMMDD")
     const storedDateInfo = await dbHandler.get("dates", dateKey)
     if (storedDateInfo) {
