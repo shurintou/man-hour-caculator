@@ -1,7 +1,7 @@
 <template>
     <a-modal title="Time" centered :open="props.isModalVisible" @ok="submitHandler" @cancel="changeModalVisible(false)"
         okText="submit" :maskClosable="false">
-        <a-form :model="formState">
+        <a-form :model="formState" ref="formRef">
             <a-form-item label="Scheduled work hours" :labelCol="labelColStyle" v-bind="validateInfos.scheduledWorkHours">
                 <a-input-number type="number" :style="inputStyle" v-model:value="formState.scheduledWorkHours"
                     :addon-after="timeInputAddonAfter" :step="timeInputStep" />
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, watch } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import { useDateStore } from '@/stores/date'
 import { useModeStore } from '@/stores/mode'
 import type { UnwrapRef } from 'vue'
@@ -38,6 +38,8 @@ import { timeModalRuleRef, timeInputAddonAfter, timeInputStep, timeMinuteStep, t
 const inputStyle = { width: '120px' }
 const labelColStyle = { lg: { offset: 2 } }
 const useForm = Form.useForm
+const formRef = ref()
+
 
 const emit = defineEmits<{
     (e: 'changeTimeModalVisible', flg: boolean): void
@@ -101,7 +103,7 @@ const submitHandler = async (e: Event) => {
                     type DateInfoModalFormStateKey = keyof typeof storedDateInfo
                     Object.keys(formState).forEach((key) => {
                         const value = formState[key as TimeModalFormStateKey]
-                        if (key in storedDateInfo) {
+                        if (value !== undefined && key in storedDateInfo) {
                             storedDateInfo[key as DateInfoModalFormStateKey] = value as never
                         }
                     })
@@ -125,6 +127,7 @@ const submitHandler = async (e: Event) => {
             dateStore.$reset()
             modeStore.initialize()
             message.success('update succeeded!')
+            formRef.value.resetFields()
         }
         catch (e: any) {
             console.error(e)
