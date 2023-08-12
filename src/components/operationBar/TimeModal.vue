@@ -128,6 +128,7 @@ const submitHandler = async (e: Event) => {
             modeStore.initialize()
             message.success('update succeeded!')
             formRef.value.resetFields()
+            emitter.emit("timeModalUpdated")
         }
         catch (e: any) {
             console.error(e)
