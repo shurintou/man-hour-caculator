@@ -51,14 +51,14 @@ const editTab = (targetKey: string | MouseEvent, action: string) => {
             dateStore.$patch(state => state.selectedDateList.splice(index, 1))
             let nextIndex = 0
             if (displayIndex > 1) nextIndex = displayIndex - 1
-            showWhich.value = displayTabDateList()[nextIndex].format('YYYYMMDD')
+            if (showWhich.value !== 'month') showWhich.value = displayTabDateList()[nextIndex].format('YYYYMMDD')
         }
     }
 }
 
 const displayTabDateList = (() => dateStore.selectedDateList.sort((a, b) => a.date() - b.date()))
 
-watch(() => props.currentDate, (newVal) => showWhich.value = newVal.format('YYYYMMDD'))
+watch(() => props.currentDate, (newVal) => { if (showWhich.value !== 'month') showWhich.value = newVal.format('YYYYMMDD') })
 
 </script>
 
