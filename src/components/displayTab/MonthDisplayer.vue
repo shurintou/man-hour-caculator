@@ -63,7 +63,7 @@ const overManHourStatusColor = (workHours: number) => {
     else if (workHours > 180) {
         return 'yellow'
     }
-    else if (workHours < 140) {
+    else if (workHours < 140 && workHours > 0) {
         return 'red'
     }
     return 'green'
