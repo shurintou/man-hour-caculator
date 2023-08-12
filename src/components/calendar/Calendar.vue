@@ -5,12 +5,12 @@
       <CalendarHeader @change-date="changeDate" :currentDate="value"></CalendarHeader>
     </template>
     <template #dateFullCellRender="{ current }">
-      <DateButton @change-date="changeDate" :date="current" :is-current-month="!isDisabledMonth(current)"
+      <DateButton @change-date="changeDate" :currentDate="current" :is-current-month="!isDisabledMonth(current)"
         :isSelected="dateStore.selectedDateList.some(old => isSameDay(old, current))"></DateButton>
     </template>
   </a-calendar>
   <OperationBar v-if="windowWidth < smWidth" :currentDate="date"></OperationBar>
-  <DisplayTab :current-date="date" :changeDate="changeDate"></DisplayTab>
+  <DisplayTab :currentDate="date" :changeDate="changeDate"></DisplayTab>
 </template>
 
 <script lang="ts" setup>

@@ -1,9 +1,9 @@
 <template>
-    <div class="calendar-date-box" :style="{ 'width': responsiveDateButtonWidth }" @click="changeDate(props.date)">
+    <div class="calendar-date-box" :style="{ 'width': responsiveDateButtonWidth }" @click="changeDate(props.currentDate)">
         <div class="calendar-date-text" :style="{ 'color': dateColor }">
             <span style=" border-radius: 15px;"
                 :style="{ backgroundColor: props.isSelected ? dateColor : '', color: props.isSelected ? '#FFFFFF' : '' }">
-                {{ props.date.date() }}
+                {{ props.currentDate.date() }}
             </span>
             <template v-if="isJapaneseHolidayGot">
                 <span v-if="windowWidth >= smWidth">{{ japaneseHolidayName }}</span>
@@ -49,12 +49,12 @@ const emit = defineEmits<{
 }>()
 
 const props = defineProps<{
-    date: Dayjs,
+    currentDate: Dayjs,
     isCurrentMonth: boolean,
     isSelected: boolean,
 }>()
 
-emitter.on(props.date.format("YYYYMMDD"), () => fetchDateData())
+emitter.on(props.currentDate.format("YYYYMMDD"), () => fetchDateData())
 
 const japaneseHolidayName = computed(() => {
     let holidayName = isJapaneseHolidayGot.value?.name_en
@@ -67,10 +67,10 @@ const japaneseHolidayName = computed(() => {
 
 const responsiveDateButtonWidth = computed(() => (windowWidth.value / 7) - 4 + 'px') // 7 is for 7 days in one line, and 4 is for 2*2 of two borders.
 
-const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.date.toDate()))
+const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.currentDate.toDate()))
 
 const dateColor = computed(() => {
-    const day = props.date.day()
+    const day = props.currentDate.day()
     if (!props.isCurrentMonth) return ''
     if (day === 0 || isJapaneseHolidayGot.value) return '#ff4d4f'
     if (day === 6) return '#1677ff'
@@ -103,7 +103,7 @@ onMounted(async () => fetchDateData())
 
 const fetchDateData = async () => {
     const dbHandler = await db
-    const res = await dbHandler.get("dates", props.date.format("YYYYMMDD"))
+    const res = await dbHandler.get("dates", props.currentDate.format("YYYYMMDD"))
     taskExist.value = taskDone.value = memoExist.value = false
     if (res) {
         const { startTime, endTime, restHours, scheduledWorkHours, taskIndexes, memo } = res
