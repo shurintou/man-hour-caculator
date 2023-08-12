@@ -104,7 +104,8 @@ onMounted(async () => fetchDateData())
 const fetchDateData = async () => {
     const dbHandler = await db
     const res = await dbHandler.get("dates", props.currentDate.format("YYYYMMDD"))
-    taskExist.value = taskDone.value = memoExist.value = false
+    taskExist.value = taskDone.value = memoExist.value = isReal.value = false
+    workTime.value = 0
     if (res) {
         const { startTime, endTime, restHours, scheduledWorkHours, taskIndexes, memo } = res
         if (startTime && endTime) {
