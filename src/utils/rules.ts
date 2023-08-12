@@ -7,11 +7,6 @@ export const timeModalRuleRef = reactive({
             message: 'Hour should be 0 to 24',
             trigger: 'blur',
         },
-        {
-            required: true,
-            message: 'Missing scheduled work hours',
-            trigger: 'blur',
-        },
     ],
     startTime: [
         {
