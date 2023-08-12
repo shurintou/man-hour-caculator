@@ -129,7 +129,7 @@ const submitHandler = async (e: Event) => {
         catch (e: any) {
             console.error(e)
             message.error(e.message)
-            transaction.abort
+            transaction.abort()
         }
         changeModalVisible(false)
     }
