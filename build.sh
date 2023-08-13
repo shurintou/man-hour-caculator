@@ -27,6 +27,8 @@ function build(){
         fi
     done
     cp -r $1/* ./
+    sed -i 's/href="\//href=".\//g' index.html
+    sed -i 's/src="\//src=".\//g' index.html
 }
 # parameter: the dir of built source code 
 buildFolderPath=../man-hour-caculator/dist
