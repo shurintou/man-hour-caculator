@@ -78,7 +78,11 @@ const realWorkHolidays = ref<number>(0)
 const realWorkHours = ref<number>(0)
 const overtimeHours = ref<number>(0)
 
-watch(() => props.currentDate, async () => fetchData())
+watch(() => props.currentDate, async (newDate, oldDate) => {
+    if (newDate.year() !== oldDate.year() || newDate.month() !== oldDate.month()) {
+        fetchData()
+    }
+})
 
 emitter.on("timeModalUpdated", async () => fetchData())
 
