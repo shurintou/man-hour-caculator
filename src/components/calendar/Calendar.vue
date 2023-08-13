@@ -70,6 +70,11 @@ const selectDate = (selectedDate: Dayjs) => {
   background-color: unset !important;
 }
 
+:where(.css-eq3tly).ant-picker-calendar .ant-picker-cell-disabled::before {
+  /* not to set background color for date in previous or next month */
+  background-color: unset !important;
+}
+
 .ant-picker-cell {
   padding: 0px !important;
 }
