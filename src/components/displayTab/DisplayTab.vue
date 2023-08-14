@@ -63,11 +63,6 @@ watch(() => props.currentDate, (newVal) => { if (showWhich.value !== 'month') sh
 </script>
 
 <style scoped>
-:where(.css-dev-only-do-not-override-eq3tly).ant-input-disabled,
-:where(.css-dev-only-do-not-override-eq3tly).ant-input[disabled] {
-    color: #000000;
-}
-
 .tabs-extra-button {
     margin-left: 6px
 }
