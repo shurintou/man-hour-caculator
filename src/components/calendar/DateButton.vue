@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, onMounted, computed, onUpdated, ref } from 'vue'
+import { inject, onMounted, computed, watch, ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthRef } from '@/main'
 import { ClockCircleTwoTone, ClockCircleOutlined, ScheduleTwoTone, ScheduleOutlined } from '@ant-design/icons-vue'
@@ -98,7 +98,9 @@ const taskExist = ref<boolean>(false)
 const taskDone = ref<boolean>(false)
 const memoExist = ref<boolean>(false)
 
-onUpdated(async () => fetchDateData())
+watch(() => props.currentDate, async (newDate, oldDate) => {
+    if (!newDate.isSame(oldDate)) fetchDateData()
+})
 onMounted(async () => fetchDateData())
 
 const fetchDateData = async () => {
