@@ -6,7 +6,7 @@
             <a-badge :color="overManHourStatusColor(scheduledWorkHours)" :text="scheduledWorkHours" />
         </a-descriptions-item>
         <a-descriptions-item label="estimated hours">
-            <a-badge :color="overManHourStatusColor(estimatedWorkHours)" :text="estimatedWorkHours" />
+            <a-badge :color="overManHourStatusColor(estimatedWorkHours)" :text="displayEstimatedWorkHours" />
         </a-descriptions-item>
     </a-descriptions>
     <br>
@@ -14,10 +14,10 @@
         <a-descriptions-item label="work days">{{ realWorkDays }}</a-descriptions-item>
         <a-descriptions-item label="holidays">{{ realWorkHolidays }}</a-descriptions-item>
         <a-descriptions-item label="work hours">
-            <a-badge :color="overManHourStatusColor(realWorkHours)" :text="realWorkHours" />
+            <a-badge :color="overManHourStatusColor(realWorkHours)" :text="displayRealWorkHours" />
         </a-descriptions-item>
         <a-descriptions-item label="overtime hours">
-            <a-badge :color="overtimeStatusColor" :text="overtimeHours" />
+            <a-badge :color="overtimeStatusColor" :text="displayOvertimeHours" />
         </a-descriptions-item>
     </a-descriptions>
 </template>
@@ -77,6 +77,10 @@ const realWorkDays = ref<number>(0)
 const realWorkHolidays = ref<number>(0)
 const realWorkHours = ref<number>(0)
 const overtimeHours = ref<number>(0)
+
+const displayEstimatedWorkHours = computed(() => estimatedWorkHours.value.toFixed(2))
+const displayRealWorkHours = computed(() => realWorkHours.value.toFixed(2))
+const displayOvertimeHours = computed(() => overtimeHours.value.toFixed(2))
 
 watch(() => props.currentDate, async (newDate, oldDate) => {
     if (newDate.year() !== oldDate.year() || newDate.month() !== oldDate.month()) {
