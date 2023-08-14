@@ -118,12 +118,12 @@ const fetchDateData = async () => {
         else if (scheduledWorkHours) {
             workTime.value = scheduledWorkHours
         }
-        if (taskIndexes && taskIndexes?.length > 0) {
+        if (taskIndexes && taskIndexes.length > 0) {
             const taskList = await dbHandler.getAll("tasks", ...taskIndexes)
             taskExist.value = true
             taskDone.value = taskList.every(task => task.isDone === true)
         }
-        memoExist.value = memo !== undefined && memo?.length > 0
+        memoExist.value = memo !== undefined && memo.length > 0
     }
     else {
         workTime.value = 0
