@@ -6,13 +6,13 @@
             </a-button>
             <template #overlay>
                 <a-menu>
-                    <a-menu-item key="1"><a-button type="link" @click="selectDate('work')">All
+                    <a-menu-item key="1"><a-button type="link" @click="selectDates('work')">All
                             weekdays</a-button></a-menu-item>
-                    <a-menu-item key="2"><a-button type="link" @click="selectDate('all')">All days</a-button></a-menu-item>
-                    <a-menu-item key="3"><a-button type="link" @click="selectDate('holiday')">All
+                    <a-menu-item key="2"><a-button type="link" @click="selectDates('all')">All days</a-button></a-menu-item>
+                    <a-menu-item key="3"><a-button type="link" @click="selectDates('holiday')">All
                             holidays</a-button></a-menu-item>
                     <a-menu-item key="4"><a-button type="link" v-show="modeStore.currentMode === 'normal'"
-                            @click="modeStore.toggltSelect()">Custom</a-button></a-menu-item>
+                            @click="customSelect">Custom</a-button></a-menu-item>
                 </a-menu>
             </template>
         </a-dropdown>
@@ -54,7 +54,7 @@ const isCancelable = computed(() => dateStore.$state.selectedDateList.length > 0
 
 const changeTimeModalVisible = (flg: boolean) => isTimeModalVisible.value = flg
 
-const selectDate = (selectType: "work" | "all" | "holiday") => {
+const selectDates = (selectType: "work" | "all" | "holiday") => {
     const daysInCurrentMonth = props.currentDate.daysInMonth()
     const firstDateOfCurrentMonth = props.currentDate.startOf('month')
     let allSelected = true
@@ -93,6 +93,11 @@ const selectDate = (selectType: "work" | "all" | "holiday") => {
 const cancelSelect = () => {
     dateStore.$reset()
     if (modeStore.currentMode === 'selectDate') modeStore.initialize()
+}
+
+const customSelect = () => {
+    dateStore.$patch(state => state.selectedDateList.push(props.currentDate))
+    modeStore.currentMode = 'selectDate'
 }
 
 </script>

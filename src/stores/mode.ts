@@ -10,13 +10,5 @@ export const useModeStore = defineStore('mode', {
         initialize() {
             this.currentMode = 'normal'
         },
-        toggltSelect() {
-            if (this.currentMode === 'normal') {
-                this.currentMode = 'selectDate'
-            }
-            else if (this.currentMode === 'selectDate') {
-                this.currentMode = 'normal'
-            }
-        },
     }
 })
