@@ -19,3 +19,11 @@ export function throttle(fn: Function, delay?: number) {
         }, delay ? delay : 100)
     }
 }
+
+export function fixNumToStr(num: number, decimalPlace: number = 2, remainLastZero: boolean = false): string {
+    const decimalPart = (num.toString().split('.')[1] || '').length
+    if (decimalPart > decimalPlace || remainLastZero) {
+        return num.toFixed(decimalPlace)
+    }
+    return num.toString()
+}

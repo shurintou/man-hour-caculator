@@ -39,6 +39,7 @@ import { getJapenseHoliday } from '@/utils/holidays'
 import { windowWidthConstant } from '@/config/constants'
 import { windowWidthKey } from '@/types/inject'
 import emitter from '@/utils/emitter'
+import { fixNumToStr } from '@/utils/common'
 import db from '@/utils/datebase'
 
 const windowWidth = inject(windowWidthKey, windowWidthRef)
@@ -83,16 +84,7 @@ const changeDate = (newDate: Dayjs) => {
 
 const workTime = ref<number>(0)
 const isReal = ref<boolean>(false)
-const displayWorkTime = computed(() => {
-    if (countDecimalPlaces(workTime.value) > 2) {
-        return workTime.value.toFixed(2)
-    } return workTime.value
-})
-
-const countDecimalPlaces = (number: number) => {
-    const decimalPart = (number.toString().split('.')[1] || '').length
-    return decimalPart
-}
+const displayWorkTime = computed(() => fixNumToStr(workTime.value))
 
 const taskExist = ref<boolean>(false)
 const taskDone = ref<boolean>(false)

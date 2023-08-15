@@ -27,6 +27,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
+import { fixNumToStr } from '@/utils/common'
 
 const props = defineProps<{
     currentDate: Dayjs,
@@ -78,9 +79,9 @@ const realWorkHolidays = ref<number>(0)
 const realWorkHours = ref<number>(0)
 const overtimeHours = ref<number>(0)
 
-const displayEstimatedWorkHours = computed(() => estimatedWorkHours.value.toFixed(2))
-const displayRealWorkHours = computed(() => realWorkHours.value.toFixed(2))
-const displayOvertimeHours = computed(() => overtimeHours.value.toFixed(2))
+const displayEstimatedWorkHours = computed(() => fixNumToStr(estimatedWorkHours.value))
+const displayRealWorkHours = computed(() => fixNumToStr(realWorkHours.value))
+const displayOvertimeHours = computed(() => fixNumToStr(overtimeHours.value))
 
 watch(() => props.currentDate, async (newDate, oldDate) => {
     if (newDate.year() !== oldDate.year() || newDate.month() !== oldDate.month()) {
