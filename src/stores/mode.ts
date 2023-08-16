@@ -10,5 +10,13 @@ export const useModeStore = defineStore('mode', {
         initialize() {
             this.currentMode = 'normal'
         },
+        toggltEditDate() {
+            if (this.currentMode === 'normal') {
+                this.currentMode = 'editDate'
+            }
+            else if (this.currentMode === 'editDate') {
+                this.currentMode = 'normal'
+            }
+        },
     }
 })
