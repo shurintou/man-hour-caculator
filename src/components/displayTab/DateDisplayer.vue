@@ -1,6 +1,6 @@
 <template>
     <a-form ref="formRef" :model="formState">
-        <a-descriptions size="small" bordered :column="{ xxl: 3, xl: 3, lg: 3, md: 3, sm: 1, xs: 1 }">
+        <a-descriptions size="small" bordered :column="{ xxl: 3, xl: 3, lg: 3, md: 1, sm: 1, xs: 1 }">
             <template #title>
                 <div class="date-displayer-holiday">{{ displayJapaneseHoliday }}</div>
             </template>
@@ -44,9 +44,9 @@
                     v-bind="validateInfos.restHours" :addon-after="timeInputAddonAfter" :step="timeInputStep" />
                 <div v-else :style="inputStyle"> {{ displayRestHours }} </div>
             </a-descriptions-item>
-            <a-descriptions-item label="Memo" :span="3">
-                <a-textarea v-if="isEditing" v-model:value="formState.memo" :style="textAreaStyle"
-                    placeholder="take down some memos" :rows="2" />
+            <a-descriptions-item label="Memo" :span="isPcMode ? 3 : 1" :style="textAreaStyle">
+                <a-textarea :style="textAreaStyle" v-if="isEditing" :auto-size="{ minRows: 2, maxRows: 5 }"
+                    v-model:value="formState.memo" placeholder="take down some memos" />
                 <div v-else :style="textAreaStyle">{{ displayMemo }}</div>
             </a-descriptions-item>
         </a-descriptions>
@@ -77,7 +77,7 @@ const modeStore = useModeStore()
 const editDate = () => modeStore.toggltEditDate()
 const isEditing = computed(() => modeStore.currentMode === 'editDate')
 const inputStyle = { width: '120px', height: '30px', lineHeight: '30px' }
-const textAreaStyle = { width: isPcMode.value === true ? '60vw' : '40vw', height: '50px' }
+const textAreaStyle = computed(() => isPcMode.value === true ? { height: '54px' } : { minWidth: '46vw', height: '54px' }) // 54px height will keep the description label's position stable.
 
 const displayJapaneseHoliday = ref<string>("")
 const displayStartTime = ref<string>("")
