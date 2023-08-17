@@ -18,11 +18,8 @@
                         <ClockCircleTwoTone v-if="isReal" />
                         <ClockCircleOutlined v-else />
                     </span>
-                    <span v-if="taskExist || memoExist">
-                        <a-badge :dot="taskExist && !taskDone">
-                            <ScheduleOutlined v-if="!taskExist" />
-                            <ScheduleTwoTone v-else />
-                        </a-badge>
+                    <span v-if="memoExist">
+                        <ScheduleTwoTone />
                     </span>
                 </a-space>
             </div>
@@ -34,7 +31,7 @@
 import { inject, onMounted, computed, watch, ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthRef } from '@/main'
-import { ClockCircleTwoTone, ClockCircleOutlined, ScheduleTwoTone, ScheduleOutlined } from '@ant-design/icons-vue'
+import { ClockCircleTwoTone, ClockCircleOutlined, ScheduleTwoTone } from '@ant-design/icons-vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { windowWidthConstant } from '@/config/constants'
 import { windowWidthKey } from '@/types/inject'
@@ -86,8 +83,6 @@ const workTime = ref<number>(0)
 const isReal = ref<boolean>(false)
 const displayWorkTime = computed(() => fixNumToStr(workTime.value))
 
-const taskExist = ref<boolean>(false)
-const taskDone = ref<boolean>(false)
 const memoExist = ref<boolean>(false)
 
 watch(() => props.currentDate, async (newDate, oldDate) => {
@@ -98,10 +93,9 @@ onMounted(async () => fetchDateData())
 const fetchDateData = async () => {
     const dbHandler = await db
     const res = await dbHandler.get("dates", props.currentDate.format("YYYYMMDD"))
-    taskExist.value = taskDone.value = memoExist.value = isReal.value = false
     workTime.value = 0
     if (res) {
-        const { startTime, endTime, restHours, scheduledWorkHours, taskIndexes, memo } = res
+        const { startTime, endTime, restHours, scheduledWorkHours, memo } = res
         if (startTime && endTime) {
             const startDate = dayjs(startTime, 'HHmm')
             const endDate = dayjs(endTime, 'HHmm')
@@ -111,11 +105,6 @@ const fetchDateData = async () => {
         }
         else if (scheduledWorkHours) {
             workTime.value = scheduledWorkHours
-        }
-        if (taskIndexes && taskIndexes.length > 0) {
-            const taskList = await dbHandler.getAll("tasks", ...taskIndexes)
-            taskExist.value = true
-            taskDone.value = taskList.every(task => task.isDone === true)
         }
         memoExist.value = memo !== undefined && memo.length > 0
     }

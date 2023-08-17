@@ -112,7 +112,6 @@ const submitHandler = async (e: Event) => {
                 else {
                     const addDto: DateTable = {
                         date: dateKey,
-                        taskIndexes: undefined,
                         startTime: formState.startTime,
                         endTime: formState.endTime,
                         restHours: formState.restHours,
