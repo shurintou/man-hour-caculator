@@ -50,7 +50,7 @@ const props = defineProps<{
     isSelected: boolean,
 }>()
 
-emitter.on(props.currentDate.format("YYYYMMDD"), () => fetchDateData())
+const asyncFechDateData = async () => fetchDateData()
 
 const japaneseHolidayName = computed(() => {
     let holidayName = isJapaneseHolidayGot.value?.name_en
@@ -84,9 +84,13 @@ const displayWorkTime = computed(() => fixNumToStr(workTime.value))
 const memoExist = ref<boolean>(false)
 
 watch(() => props.currentDate, async (newDate, oldDate) => {
-    if (!newDate.isSame(oldDate)) fetchDateData()
+    if (!newDate.isSame(oldDate)) {
+        fetchDateData()
+        emitter.on(newDate.format("YYYYMMDD"), asyncFechDateData)
+        emitter.off(oldDate.format("YYYYMMDD"), asyncFechDateData)
+    }
 })
-onMounted(async () => fetchDateData())
+onMounted(asyncFechDateData)
 
 const fetchDateData = async () => {
     const dbHandler = await db
