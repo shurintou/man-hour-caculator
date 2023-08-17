@@ -4,7 +4,7 @@
         <a-tab-pane v-if="dateStore.selectedDateList.length === 0" :closable="tabClosable"
             :key="props.currentDate.format('YYYYMMDD')" :tab="dateTabName"> </a-tab-pane>
         <template v-else v-for=" date in displayTabDateList()" :key="date.format('YYYYMMDD')">
-            <a-tab-pane :tab="date.format('YYYY-MM-DD')" :closable="tabClosable"
+            <a-tab-pane :tab="date.format('MM-DD')" :closable="tabClosable"
                 :active="date.format('YYYYMMDD') === showWhich"> </a-tab-pane>
         </template>
         <template #rightExtra>
@@ -32,7 +32,7 @@ const props = defineProps<{
     changeDate: (date: Dayjs) => void,
 }>()
 const showWhich = ref<string>(props.currentDate.format('YYYYMMDD'))
-const dateTabName = computed(() => props.currentDate.format('YYYY-MM-DD'))
+const dateTabName = computed(() => props.currentDate.format('MM-DD'))
 const monthTabName = computed(() => props.currentDate.format('YYYY-MM'))
 const dateStore = useDateStore()
 const tabClosable = computed(() => dateStore.selectedDateList.length > 1)
