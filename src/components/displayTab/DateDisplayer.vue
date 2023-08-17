@@ -6,7 +6,7 @@
             </template>
             <template #extra>
                 <a-space v-if="isEditing">
-                    <a-button type="primary" :icon="h(CheckOutlined)">
+                    <a-button type="primary" :icon="h(CheckOutlined)" @click="submitEditForm">
                         <span v-if="isPcMode">Submit</span>
                     </a-button>
                     <a-button type="primary" :icon="h(CloseCircleOutlined)" danger @click="editDate">
@@ -50,6 +50,76 @@
                 <div v-else :style="textAreaStyle">{{ displayMemo }}</div>
             </a-descriptions-item>
         </a-descriptions>
+        <a-divider orientation="left">Tasks</a-divider>
+        <a-row v-for="task in formState.tasks" :key="task.id" style="display: flex;" align="baseline">
+            <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
+                <a-space align="baseline">
+                    <a-form-item label="Done">
+                        <a-checkbox v-model:checked="task.isDone" :disabled="task.isDelete" />
+                    </a-form-item>
+                    <a-form-item label="Start time" v-bind="validateInfos.startTime">
+                        <a-time-picker v-model:value="task.startTime" :valueFormat="timeValueFormat"
+                            :disabled="task.isDelete" :format="timeDisplayFormat" :inputReadOnly="true"
+                            :placeholder="isPcMode ? 'Select time' : ''" />
+                    </a-form-item>
+                    <a-form-item label="End time" v-bind="validateInfos.endTime">
+                        <a-time-picker v-model:value="task.endTime" :valueFormat="timeValueFormat" :disabled="task.isDelete"
+                            :format="timeDisplayFormat" :inputReadOnly="true"
+                            :placeholder="isPcMode ? 'Select time' : ''" />
+                    </a-form-item>
+                    <a-form-item label="Description" :rules="{ required: true }"
+                        :help="task.validated ? '' : 'Missing description'" :validateStatus="task.validated ? '' : 'error'">
+                        <a-input v-model:value="task.description" show-count :maxlength="taskMaxLength"
+                            :disabled="task.isDelete" />
+                    </a-form-item>
+                    <a-button v-if="!task.isDelete" @click="removeTask(task)" :icon="h(MinusCircleOutlined)" danger
+                        type="primary" :size="isPcMode ? 'middle' : 'small'">
+                    </a-button>
+                    <a-button v-else @click="removeTask(task)" :icon="h(PauseCircleOutlined)"
+                        :size="isPcMode ? 'middle' : 'small'">
+                    </a-button>
+                </a-space>
+            </a-col>
+        </a-row>
+        <a-row v-for="(task, index) in formState.unsavedTasks" :key="index" style="display: flex;" align="baseline">
+            <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
+                <a-space align="baseline">
+                    <a-form-item label="Done">
+                        <a-checkbox v-model:checked="task.isDone" />
+                    </a-form-item>
+                    <a-form-item label="Start time" v-bind="validateInfos.startTime">
+                        <a-time-picker v-model:value="task.startTime" :valueFormat="timeValueFormat" style="height: 35px;"
+                            :format="timeDisplayFormat" :inputReadOnly="true"
+                            :placeholder="isPcMode ? 'Select time' : ''" />
+                    </a-form-item>
+                    <a-form-item label="End time" v-bind="validateInfos.endTime">
+                        <a-time-picker v-model:value="task.endTime" :valueFormat="timeValueFormat" style="height: 35px;"
+                            :format="timeDisplayFormat" :inputReadOnly="true"
+                            :placeholder="isPcMode ? 'Select time' : ''" />
+                    </a-form-item>
+                    <a-form-item label="Description" :rules="{ required: true }"
+                        :help="task.validated ? '' : 'Missing description'" :validateStatus="task.validated ? '' : 'error'">
+                        <a-input v-model:value="task.description" show-count :maxlength="taskMaxLength"
+                            style="height: 35px;" />
+                    </a-form-item>
+                    <a-popconfirm title="Are you sure delete this task?" ok-text="Yes" cancel-text="No" placement="left"
+                        @confirm="removeUnsavedTask(index)">
+                        <a-button :icon="h(MinusCircleOutlined)" danger type="primary"
+                            :size="isPcMode ? 'middle' : 'small'">
+                        </a-button>
+                    </a-popconfirm>
+                </a-space>
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :lg="{ offset: lgOffset }" :xl="{ offset: xlOffset }">
+                <a-form-item>
+                    <a-button type="dashed" block @click="addUnsavedTask">
+                        <PlusOutlined /> Add Task
+                    </a-button>
+                </a-form-item>
+            </a-col>
+        </a-row>
     </a-form>
 </template>
 
@@ -58,17 +128,19 @@ import { h, ref, reactive, computed, watch, onMounted, inject, type UnwrapRef } 
 import dayjs, { Dayjs } from 'dayjs'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat, timeModalRuleRef } from '@/utils/rules'
-import { EditOutlined, CloseCircleOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, CloseCircleOutlined, CheckOutlined, PlusOutlined, MinusCircleOutlined, PauseCircleOutlined } from '@ant-design/icons-vue'
 import db from '@/utils/datebase'
-import type { EditFormState, TaskForm } from '@/types/index'
+import type { EditFormState, TaskForm, DateTable } from '@/types/index'
 import { fixNumToStr } from '@/utils/common'
 import { useModeStore } from '@/stores/mode'
 import { Form, message } from 'ant-design-vue'
 import { isPcModeRef } from '@/main'
 import { isPcModeKey } from '@/types/inject'
+import emitter from '@/utils/emitter'
 const isPcMode = inject(isPcModeKey, isPcModeRef)
 
 const useForm = Form.useForm
+const formRef = ref()
 
 const props = defineProps<{
     currentDate: Dayjs,
@@ -87,7 +159,6 @@ const displayRestHours = ref<string>("")
 const displayOvertimeHours = ref<string>("")
 const displayMemo = ref<string>("")
 const displayScheduledWorkHours = ref<string>("")
-const overtimeHours = ref<string>("")
 
 const formState: UnwrapRef<EditFormState> = reactive({
     startTime: undefined,
@@ -111,7 +182,7 @@ const fetchDateData = async () => {
     const dateKey = props.currentDate.format("YYYYMMDD")
     const storedDateInfo = await dbHandler.get("dates", dateKey)
     displayWorkTime.value = displayOvertimeHours.value = ""
-    displayStartTime.value = displayEndTime.value = displayMemo.value = displayRestHours.value = displayScheduledWorkHours.value = overtimeHours.value = ""
+    displayStartTime.value = displayEndTime.value = displayMemo.value = displayRestHours.value = displayScheduledWorkHours.value = ""
     formState.startTime = undefined
     formState.endTime = undefined
     formState.scheduledWorkHours = undefined
@@ -147,7 +218,8 @@ const fetchDateData = async () => {
         if (startDate && endDate) {
             const realWorkTime = endDate.diff(startDate, "hour", true)
             displayWorkTime.value = fixNumToStr(realWorkTime - (restHours || 0))
-            displayOvertimeHours.value = fixNumToStr(realWorkTime - (restHours || 0) - (scheduledWorkHours || 0))
+            const overtimeHours = realWorkTime - (restHours || 0) - (scheduledWorkHours || 0)
+            if (overtimeHours > 0) displayOvertimeHours.value = fixNumToStr(overtimeHours)
         }
         displayScheduledWorkHours.value = scheduledWorkHours?.toString() || ""
         displayMemo.value = memo || ''
@@ -159,6 +231,98 @@ const fetchDateData = async () => {
         displayJapaneseHoliday.value = japaneseHoliday.name_en
         if (japaneseHoliday.name.indexOf("振替") !== -1) { displayJapaneseHoliday.value += "　振替休日" }
         else { displayJapaneseHoliday.value += "　" + japaneseHoliday.name }
+    }
+}
+
+const lgOffset = 1
+const xlOffset = 2
+const taskMaxLength = 50
+const removeTask = (task: TaskForm) => task.isDelete = !task.isDelete
+const addUnsavedTask = () => { formState.unsavedTasks.push({ validated: true, startTime: undefined, endTime: undefined, description: undefined, isDone: false }) }
+const removeUnsavedTask = (index: number) => formState.unsavedTasks.splice(index, 1)
+const submitEditForm = async () => {
+    await validate()
+    const dbHandler = await db
+    const transaction = dbHandler.transaction(['dates', 'tasks'], 'readwrite')
+    let shouldSubmit = true
+    try {
+        const dateKey = props.currentDate.format("YYYYMMDD")
+        const storedDateInfo = await transaction.objectStore("dates").get(dateKey)
+        let unsavedTasksIndex: number[] = []
+        if (formState.unsavedTasks.length > 0) {
+            for (const task of formState.unsavedTasks) {
+                if (task.description && task.description.length > 0) {
+                    const key = await transaction.objectStore("tasks").add({ ...task })
+                    unsavedTasksIndex.push(key)
+                }
+                else {
+                    task.validated = false
+                    shouldSubmit = false
+                }
+            }
+        }
+        if (storedDateInfo) {
+            type TimeModalFormStateKey = keyof typeof formState
+            type DateInfoModalFormStateKey = keyof typeof storedDateInfo
+            Object.keys(formState).forEach((key) => {
+                const value = formState[key as TimeModalFormStateKey]
+                if (key in storedDateInfo) {
+                    storedDateInfo[key as DateInfoModalFormStateKey] = value as never
+                }
+            })
+            if (formState.tasks) {
+                for (const task of formState.tasks) {
+                    const index = storedDateInfo.taskIndexes?.findIndex(taskIndex => taskIndex === task.id)
+                    if (task.isDelete) {
+                        if (index !== undefined && index >= 0) {
+                            storedDateInfo.taskIndexes?.splice(index, 1)
+                            if (task.id) await transaction.objectStore("tasks").delete(task.id)
+                        }
+                    }
+                    else {
+                        if (task.description && task.description.length > 0) {
+                            await transaction.objectStore("tasks").put(
+                                { id: task.id, isDone: task.isDone, startTime: task.startTime, endTime: task.endTime, description: task.description }
+                            )
+                        }
+                        else {
+                            task.validated = false
+                            shouldSubmit = false
+                        }
+                    }
+                }
+            }
+            storedDateInfo.taskIndexes = (storedDateInfo.taskIndexes || []).concat(unsavedTasksIndex)
+            await transaction.objectStore("dates").put(storedDateInfo)
+        }
+        else {
+            const addDto: DateTable = {
+                date: dateKey,
+                taskIndexes: unsavedTasksIndex,
+                startTime: formState.startTime,
+                endTime: formState.endTime,
+                restHours: formState.restHours,
+                scheduledWorkHours: formState.scheduledWorkHours,
+                memo: formState.memo,
+            }
+            await transaction.objectStore("dates").add(addDto)
+        }
+        if (!shouldSubmit) {
+            transaction.abort()
+            return
+        }
+        emitter.emit(dateKey)
+        formState.unsavedTasks = []
+        await transaction.done
+        await fetchDateData()
+        message.success('update succeeded!')
+        modeStore.initialize()
+        formRef.value.resetFields()
+    }
+    catch (e: any) {
+        console.error(e)
+        message.error(e.message)
+        transaction.abort()
     }
 }
 </script>
