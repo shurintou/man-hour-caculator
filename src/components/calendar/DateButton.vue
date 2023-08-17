@@ -13,10 +13,8 @@
         <div class="calendar-date-content">
             <div style="height: 100%;">
                 <a-space :size="4">
-                    <span v-if="isCurrentMonth && workTime > 0">
-                        {{ displayWorkTime }}
-                        <ClockCircleTwoTone v-if="isReal" />
-                        <ClockCircleOutlined v-else />
+                    <span v-if="isCurrentMonth && workTime > 0" :style="{ color: isReal ? '#1677FF' : '#000000' }">
+                        {{ displayWorkTime + 'h' }}
                     </span>
                     <span v-if="memoExist">
                         <ScheduleTwoTone />
@@ -31,7 +29,7 @@
 import { inject, onMounted, computed, watch, ref } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthRef } from '@/main'
-import { ClockCircleTwoTone, ClockCircleOutlined, ScheduleTwoTone } from '@ant-design/icons-vue'
+import { ScheduleTwoTone } from '@ant-design/icons-vue'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { windowWidthConstant } from '@/config/constants'
 import { windowWidthKey } from '@/types/inject'

@@ -3,22 +3,23 @@
         <a-descriptions-item label="work days">{{ scheduledWorkDays }}</a-descriptions-item>
         <a-descriptions-item label="holidays">{{ scheduledHolidays }}</a-descriptions-item>
         <a-descriptions-item label="work hours">
-            <a-badge :color="overManHourStatusColor(scheduledWorkHours)" :text="scheduledWorkHours" />
+            <span v-if="scheduledWorkHours === 0">{{ scheduledWorkHours }}</span>
+            <a-badge v-else :color="overManHourStatusColor(scheduledWorkHours)" :text="scheduledWorkHours" />
         </a-descriptions-item>
         <a-descriptions-item label="estimated hours">
-            <a-badge :color="overManHourStatusColor(estimatedWorkHours)" :text="displayEstimatedWorkHours" />
+            <span v-if="estimatedWorkHours === 0">{{ displayEstimatedWorkHours }}</span>
+            <a-badge v-else :color="overManHourStatusColor(estimatedWorkHours)" :text="displayEstimatedWorkHours" />
         </a-descriptions-item>
     </a-descriptions>
     <br>
-    <a-descriptions size="small" title="Real" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
+    <a-descriptions size="small" title="Actual" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
         <a-descriptions-item label="work days">{{ realWorkDays }}</a-descriptions-item>
         <a-descriptions-item label="holidays">{{ realWorkHolidays }}</a-descriptions-item>
         <a-descriptions-item label="work hours">
-            <a-badge :color="overManHourStatusColor(realWorkHours)" :text="displayRealWorkHours" />
+            <span v-if="realWorkHours === 0">{{ displayRealWorkHours }}</span>
+            <a-badge v-else :color="overManHourStatusColor(realWorkHours)" :text="displayRealWorkHours" />
         </a-descriptions-item>
-        <a-descriptions-item label="overtime hours">
-            <a-badge :color="overtimeStatusColor" :text="displayOvertimeHours" />
-        </a-descriptions-item>
+        <a-descriptions-item label="overtime hours">{{ displayOvertimeHours }} </a-descriptions-item>
     </a-descriptions>
 </template>
 
@@ -33,36 +34,9 @@ const props = defineProps<{
     currentDate: Dayjs,
 }>()
 
-const overtimeStatusColor = computed(() => {
-    if (realWorkDays.value > 0) {
-        if (overtimeHours.value >= realWorkDays.value * 3) {
-            return 'red'
-        }
-        else if (overtimeHours.value >= realWorkDays.value * 2) {
-            return 'pink'
-        }
-        else if (overtimeHours.value >= realWorkDays.value * 1) {
-            return 'orange'
-        }
-        else if (overtimeHours.value > 0) {
-            return 'yellow'
-        }
-    }
-    return 'green'
-})
-
 const overManHourStatusColor = (workHours: number) => {
-    if (workHours > 210) {
+    if (workHours > 180) {
         return 'red'
-    }
-    else if (workHours > 200) {
-        return 'pink'
-    }
-    else if (workHours > 190) {
-        return 'orange'
-    }
-    else if (workHours > 180) {
-        return 'yellow'
     }
     else if (workHours < 140 && workHours > 0) {
         return 'red'

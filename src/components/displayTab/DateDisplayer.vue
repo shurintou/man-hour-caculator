@@ -5,13 +5,16 @@
                 <div class="date-displayer-holiday">{{ displayJapaneseHoliday }}</div>
             </template>
             <template #extra>
-                <a-space v-if="isEditing">
+                <a-space v-if="isEditing" :size="isPcMode ? 'large' : 'middle'">
                     <a-button type="primary" :icon="h(CheckOutlined)" @click="submitEditForm">
                         <span v-if="isPcMode">Submit</span>
                     </a-button>
-                    <a-button type="primary" :icon="h(CloseCircleOutlined)" danger @click="editDate">
-                        <span v-if="isPcMode">Cancel</span>
-                    </a-button>
+                    <a-popconfirm title="Are you sure cancel this edit?" ok-text="Yes" cancel-text="No"
+                        @confirm="cancelEdit" placement="left">
+                        <a-button type="primary" :icon="h(CloseCircleOutlined)" danger>
+                            <span v-if="isPcMode">Cancel</span>
+                        </a-button>
+                    </a-popconfirm>
                 </a-space>
                 <a-button v-else :icon="h(EditOutlined)" @click="editDate">
                     <span v-if="isPcMode">Edit</span>
@@ -77,6 +80,10 @@ const props = defineProps<{
 }>()
 const modeStore = useModeStore()
 const editDate = () => modeStore.toggltEditDate()
+const cancelEdit = async () => {
+    fetchDateData()
+    editDate()
+}
 const isEditing = computed(() => modeStore.currentMode === 'editDate')
 const inputStyle = { width: '120px', height: '30px', lineHeight: '30px' }
 const textAreaStyle = computed(() => isPcMode.value === true ? { height: '54px' } : { minWidth: '46vw', height: '54px' }) // 54px height will keep the description label's position stable.
@@ -186,7 +193,6 @@ const submitEditForm = async () => {
         await fetchDateData()
         message.success('update succeeded!')
         modeStore.initialize()
-        formRef.value.resetFields()
     }
     catch (e: any) {
         console.error(e)
