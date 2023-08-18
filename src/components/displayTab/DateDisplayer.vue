@@ -6,15 +6,19 @@
             </template>
             <template #extra>
                 <a-space v-if="isEditing" :size="isPcMode ? 'large' : 'middle'">
-                    <a-button type="primary" :icon="h(CheckOutlined)" @click="submitEditForm">
+                    <a-button type="primary" :icon="h(CheckOutlined)" @click="submitEditForm"
+                        :disabled="!isFormStateModified">
                         <span v-if="isPcMode">Submit</span>
                     </a-button>
                     <a-popconfirm title="Are you sure cancel this edit?" ok-text="Yes" cancel-text="No"
-                        @confirm="cancelEdit" placement="left">
+                        v-if="isFormStateModified" @confirm="cancelEdit" placement="left">
                         <a-button type="primary" :icon="h(CloseCircleOutlined)" danger>
                             <span v-if="isPcMode">Cancel</span>
                         </a-button>
                     </a-popconfirm>
+                    <a-button v-else type="primary" :icon="h(CloseCircleOutlined)" danger @click="cancelEdit">
+                        <span v-if="isPcMode">Cancel</span>
+                    </a-button>
                 </a-space>
                 <a-button v-else :icon="h(EditOutlined)" @click="editDate">
                     <span v-if="isPcMode">Edit</span>
@@ -83,6 +87,7 @@ const editDate = () => modeStore.toggltEditDate()
 const cancelEdit = async () => {
     fetchDateData()
     editDate()
+    isFormStateModified.value = false
 }
 const isEditing = computed(() => modeStore.currentMode === 'editDate')
 const inputStyle = { width: '120px', height: '30px', lineHeight: '30px' }
@@ -104,6 +109,8 @@ const formState: UnwrapRef<EditFormState> = reactive({
     restHours: undefined,
     memo: undefined,
 })
+const isFormStateModified = ref<boolean>(false)
+watch(formState, () => { if (isEditing.value === true) isFormStateModified.value = true })
 const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
 
