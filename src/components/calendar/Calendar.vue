@@ -1,5 +1,5 @@
 <template>
-  <a-calendar :fullscreen="false" :value="date" :disabledDate="isDisabledMonth" class="custom-ant-calendar"
+  <a-calendar :fullscreen="false" :value="date" :disabledDate="isDisabledDate" class="custom-ant-calendar"
     @select="selectDate">
     <template #headerRender="{ value }">
       <CalendarHeader @change-date="changeDate" :currentDate="value"></CalendarHeader>
@@ -32,6 +32,8 @@ const dateStore = useDateStore()
 const modeStore = useModeStore()
 const windowWidth = inject(windowWidthKey, windowWidthRef)
 const { smWidth } = windowWidthConstant
+
+const isDisabledDate = (currentDate: Dayjs) => isDisabledMonth(currentDate) || modeStore.currentMode === 'editDate'
 
 const isDisabledMonth = (currentDate: Dayjs) => currentDate.month() !== date.value?.month()
 

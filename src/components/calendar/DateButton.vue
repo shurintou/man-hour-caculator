@@ -36,6 +36,8 @@ import { windowWidthKey } from '@/types/inject'
 import emitter from '@/utils/emitter'
 import { fixNumToStr } from '@/utils/common'
 import db from '@/utils/datebase'
+import { useModeStore } from '@/stores/mode'
+const modeStore = useModeStore()
 
 const windowWidth = inject(windowWidthKey, windowWidthRef)
 const { smWidth } = windowWidthConstant
@@ -67,7 +69,7 @@ const isJapaneseHolidayGot = computed(() => getJapenseHoliday(props.currentDate.
 
 const dateColor = computed(() => {
     const day = props.currentDate.day()
-    if (!props.isCurrentMonth) return ''
+    if (!props.isCurrentMonth || modeStore.currentMode === 'editDate') return ''
     if (day === 0 || isJapaneseHolidayGot.value) return '#ff4d4f'
     if (day === 6) return '#1677ff'
     return '#000000'

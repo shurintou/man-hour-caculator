@@ -72,6 +72,7 @@ import { Form, message } from 'ant-design-vue'
 import { isPcModeRef } from '@/main'
 import { isPcModeKey } from '@/types/inject'
 import emitter from '@/utils/emitter'
+import { useDateStore } from '@/stores/date'
 const isPcMode = inject(isPcModeKey, isPcModeRef)
 
 const useForm = Form.useForm
@@ -94,7 +95,11 @@ const handlePopconfirmVisibleChange = (open: boolean) => {
         cancelEdit()
     }
 }
-const editDate = () => modeStore.toggltEditDate()
+const dateStore = useDateStore()
+const editDate = () => {
+    dateStore.$reset()
+    modeStore.toggltEditDate()
+}
 const cancelEdit = async () => {
     fetchDateData()
     editDate()

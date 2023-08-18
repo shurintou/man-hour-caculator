@@ -2,13 +2,15 @@
     <a-tabs :activeKey="showWhich" size="large" @change="changeTab" @edit="editTab" type="editable-card" hide-add
         :style="{ marginTop: isPcMode ? '' : '20px' }">
         <a-tab-pane v-if="dateStore.selectedDateList.length === 0" :closable="tabClosable"
-            :key="props.currentDate.format('YYYYMMDD')" :tab="dateTabName"> </a-tab-pane>
+            :disabled="modeStore.currentMode !== 'normal'" :key="props.currentDate.format('YYYYMMDD')" :tab="dateTabName">
+        </a-tab-pane>
         <template v-else v-for=" date in displayTabDateList()" :key="date.format('YYYYMMDD')">
-            <a-tab-pane :tab="date.format('MM-DD')" :closable="tabClosable"
-                :active="date.format('YYYYMMDD') === showWhich"> </a-tab-pane>
+            <a-tab-pane :tab="date.format('MM-DD')" :closable="tabClosable" :active="date.format('YYYYMMDD') === showWhich">
+            </a-tab-pane>
         </template>
         <template #rightExtra>
-            <a-button class="tabs-extra-button" @click="showMonthReport" :icon="h(BarChartOutlined)">
+            <a-button class="tabs-extra-button" @click="showMonthReport" :icon="h(BarChartOutlined)"
+                :disabled="modeStore.currentMode !== 'normal'">
                 <span v-if="isPcMode"> {{ monthTabName + ' report' }} </span>
             </a-button>
         </template>
@@ -45,7 +47,7 @@ const changeTab = (key: string) => {
     showWhich.value = key
 }
 const showMonthReport = () => {
-    modeStore.currentMode = 'normal'
+    modeStore.initialize()
     showWhich.value = 'month'
 }
 const editTab = (targetKey: string | MouseEvent, action: string) => {

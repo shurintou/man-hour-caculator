@@ -1,6 +1,6 @@
 <template>
     <a-space wrap :size="isPcMode ? 'large' : 'middle'">
-        <a-dropdown>
+        <a-dropdown v-if="modeStore.currentMode !== 'editDate'">
             <a-button :type="modeStore.currentMode === 'selectDate' ? 'primary' : ''" :icon="h(PlusOutlined)">
                 <span v-if="isPcMode">Select</span>
             </a-button>
@@ -16,6 +16,9 @@
                 </a-menu>
             </template>
         </a-dropdown>
+        <a-button v-else disabled :icon="h(PlusOutlined)">
+            <span v-if="isPcMode">Select</span>
+        </a-button>
         <a-button type="primary" danger :icon="h(CloseCircleOutlined)" :disabled="!isCancelable" @click="cancelSelect">
             <span v-if="isPcMode">Cancel</span>
         </a-button>

@@ -7,15 +7,20 @@
             <a-col :xs="{ span: 24 }" :sm="{ span: 24 }" :md="{ span: 10 }" :lg="{ offset: 6, span: 6 }">
                 <a-space warp size="large">
                     <a-space warp size="middle">
-                        <a-button shape="circle" :icon="h(DoubleLeftOutlined)" @click="addMonth(-12)" />
-                        <a-button shape="circle" :icon="h(LeftOutlined)" @click="addMonth(-1)" />
-                        <a-button type="primary" shape="circle" :icon="h(EnvironmentOutlined)"
-                            @click="changeDate(dayjs())" />
-                        <a-button shape="circle" :icon="h(RightOutlined)" @click="addMonth(+1)" />
-                        <a-button shape="circle" :icon="h(DoubleRightOutlined)" @click="addMonth(+12)" />
+                        <a-button :disabled="modeStore.currentMode === 'editDate'" shape="circle"
+                            :icon="h(DoubleLeftOutlined)" @click="addMonth(-12)" />
+                        <a-button :disabled="modeStore.currentMode === 'editDate'" shape="circle" :icon="h(LeftOutlined)"
+                            @click="addMonth(-1)" />
+                        <a-button :disabled="modeStore.currentMode === 'editDate'" type="primary" shape="circle"
+                            :icon="h(EnvironmentOutlined)" @click="changeDate(dayjs())" />
+                        <a-button :disabled="modeStore.currentMode === 'editDate'" shape="circle" :icon="h(RightOutlined)"
+                            @click="addMonth(+1)" />
+                        <a-button :disabled="modeStore.currentMode === 'editDate'" shape="circle"
+                            :icon="h(DoubleRightOutlined)" @click="addMonth(+12)" />
                     </a-space>
-                    <a-date-picker size="large" :value="$props.currentDate" picker="month" placeholder="select year/month"
-                        style="width: 110px;" :allowClear="false" :onChange="changeYearMonth" />
+                    <a-date-picker :disabled="modeStore.currentMode === 'editDate'" size="large" :value="$props.currentDate"
+                        picker="month" placeholder="select year/month" style="width: 110px;" :allowClear="false"
+                        :onChange="changeYearMonth" />
                 </a-space>
             </a-col>
         </a-row>
@@ -31,6 +36,8 @@ import { LeftOutlined, RightOutlined, DoubleLeftOutlined, DoubleRightOutlined, E
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthKey } from '@/types/inject'
 import { windowWidthConstant } from '@/config/constants'
+import { useModeStore } from '@/stores/mode'
+const modeStore = useModeStore()
 
 const { smWidth } = windowWidthConstant
 const windowWidth = inject(windowWidthKey, windowWidthRef)
