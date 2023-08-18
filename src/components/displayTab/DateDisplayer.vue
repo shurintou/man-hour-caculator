@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import { h, ref, reactive, computed, watch, onMounted, inject, type UnwrapRef } from 'vue'
+import { h, ref, reactive, computed, watch, onMounted, inject, onUnmounted, type UnwrapRef } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat, timeModalRuleRef } from '@/utils/rules'
@@ -107,9 +107,17 @@ const formState: UnwrapRef<EditFormState> = reactive({
 const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
 
-onMounted(async () => fetchDateData())
+onMounted(async () => {
+    emitter.on(props.currentDate.format("YYYYMMDD"), fetchDateData)
+    fetchDateData()
+})
+onUnmounted(() => emitter.off(props.currentDate.format("YYYYMMDD"), fetchDateData))
 watch(() => props.currentDate, async (newDate, oldDate) => {
-    if (!newDate.isSame(oldDate)) fetchDateData()
+    if (!newDate.isSame(oldDate)) {
+        emitter.on(newDate.format("YYYYMMDD"), fetchDateData)
+        emitter.off(oldDate.format("YYYYMMDD"), fetchDateData)
+    }
+    fetchDateData()
 })
 
 const fetchDateData = async () => {

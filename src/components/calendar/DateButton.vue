@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, onMounted, computed, watch, ref } from 'vue'
+import { inject, onMounted, computed, watch, ref, onUnmounted } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { windowWidthRef } from '@/main'
 import { ScheduleTwoTone } from '@ant-design/icons-vue'
@@ -90,7 +90,12 @@ watch(() => props.currentDate, async (newDate, oldDate) => {
         emitter.off(oldDate.format("YYYYMMDD"), asyncFechDateData)
     }
 })
-onMounted(asyncFechDateData)
+onMounted(() => {
+    emitter.on(props.currentDate.format("YYYYMMDD"), asyncFechDateData)
+    asyncFechDateData()
+})
+
+onUnmounted(() => emitter.off(props.currentDate.format("YYYYMMDD"), asyncFechDateData))
 
 const fetchDateData = async () => {
     const dbHandler = await db

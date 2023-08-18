@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
@@ -63,8 +63,6 @@ watch(() => props.currentDate, async (newDate, oldDate) => {
     }
 })
 
-emitter.on("timeModalUpdated", async () => fetchData())
-
 const fetchData = async () => {
     scheduledWorkDays.value = scheduledHolidays.value = scheduledWorkHours.value = estimatedWorkHours.value = realWorkDays.value = realWorkHolidays.value = realWorkHours.value = overtimeHours.value = 0
     const dbHandler = await db
@@ -94,6 +92,10 @@ const fetchData = async () => {
 
 }
 
-onMounted(async () => fetchData())
+onMounted(async () => {
+    emitter.on("timeModalUpdated", fetchData)
+    fetchData()
+})
+onUnmounted(() => emitter.off("timeModalUpdated", fetchData))
 
 </script>
