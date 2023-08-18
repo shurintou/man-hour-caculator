@@ -11,16 +11,14 @@
                         <span v-if="isPcMode">Submit</span>
                     </a-button>
                     <a-popconfirm title="Are you sure cancel this edit?" ok-text="Yes" cancel-text="No"
-                        v-if="isFormStateModified" @confirm="cancelEdit" placement="left">
+                        @confirm="cancelEdit" placement="left" :open="popconfirmVisible"
+                        @openChange="handlePopconfirmVisibleChange">
                         <a-button type="primary" :icon="h(CloseCircleOutlined)" danger>
                             <span v-if="isPcMode">Cancel</span>
                         </a-button>
                     </a-popconfirm>
-                    <a-button v-else type="primary" :icon="h(CloseCircleOutlined)" danger @click="cancelEdit">
-                        <span v-if="isPcMode">Cancel</span>
-                    </a-button>
                 </a-space>
-                <a-button v-else :icon="h(EditOutlined)" @click="editDate">
+                <a-button v-else :icon="h(EditOutlined)" @click="editDate" :disabled="modeStore.currentMode !== 'normal'">
                     <span v-if="isPcMode">Edit</span>
                 </a-button>
             </template>
@@ -83,11 +81,24 @@ const props = defineProps<{
     currentDate: Dayjs,
 }>()
 const modeStore = useModeStore()
+const popconfirmVisible = ref<boolean>(false)
+const handlePopconfirmVisibleChange = (open: boolean) => {
+    if (!open) {
+        popconfirmVisible.value = false
+        return
+    }
+    if (isFormStateModified.value) {
+        popconfirmVisible.value = true
+    }
+    else {
+        cancelEdit()
+    }
+}
 const editDate = () => modeStore.toggltEditDate()
 const cancelEdit = async () => {
     fetchDateData()
     editDate()
-    isFormStateModified.value = false
+    isFormStateModified.value = popconfirmVisible.value = false
 }
 const isEditing = computed(() => modeStore.currentMode === 'editDate')
 const inputStyle = { width: '120px', height: '30px', lineHeight: '30px' }

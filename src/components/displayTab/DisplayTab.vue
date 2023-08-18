@@ -26,6 +26,7 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { isPcModeKey } from '@/types/inject'
 import { isPcModeRef } from '@/main'
 import { useDateStore } from '@/stores/date'
+import { useModeStore } from '@/stores/mode'
 
 const props = defineProps<{
     currentDate: Dayjs,
@@ -35,6 +36,7 @@ const showWhich = ref<string>(props.currentDate.format('YYYYMMDD'))
 const dateTabName = computed(() => props.currentDate.format('MM-DD'))
 const monthTabName = computed(() => props.currentDate.format('YYYY-MM'))
 const dateStore = useDateStore()
+const modeStore = useModeStore()
 const tabClosable = computed(() => dateStore.selectedDateList.length > 1)
 const isPcMode = inject(isPcModeKey, isPcModeRef)
 
@@ -42,7 +44,10 @@ const changeTab = (key: string) => {
     props.changeDate(dayjs(key, 'YYYYMMDD'))
     showWhich.value = key
 }
-const showMonthReport = () => showWhich.value = 'month'
+const showMonthReport = () => {
+    modeStore.currentMode = 'normal'
+    showWhich.value = 'month'
+}
 const editTab = (targetKey: string | MouseEvent, action: string) => {
     if (action === 'remove') {
         const index = dateStore.selectedDateList.findIndex(date => date.format('YYYYMMDD') === targetKey)
