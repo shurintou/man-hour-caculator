@@ -134,6 +134,7 @@ watch(() => props.currentDate, async (newDate, oldDate) => {
     if (!newDate.isSame(oldDate)) {
         emitter.on(newDate.format("YYYYMMDD"), fetchDateData)
         emitter.off(oldDate.format("YYYYMMDD"), fetchDateData)
+        if (modeStore.currentMode !== 'selectDate') modeStore.initialize()
     }
     fetchDateData()
 })
