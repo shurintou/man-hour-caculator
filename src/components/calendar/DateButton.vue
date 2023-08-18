@@ -96,6 +96,7 @@ const fetchDateData = async () => {
     const dbHandler = await db
     const res = await dbHandler.get("dates", props.currentDate.format("YYYYMMDD"))
     workTime.value = 0
+    isReal.value = memoExist.value = false
     if (res) {
         const { startTime, endTime, restHours, scheduledWorkHours, memo } = res
         if (startTime && endTime) {
@@ -108,7 +109,7 @@ const fetchDateData = async () => {
         else if (scheduledWorkHours) {
             workTime.value = scheduledWorkHours
         }
-        memoExist.value = memo !== undefined && memo.length > 0
+        memoExist.value = props.isCurrentMonth && memo !== undefined && memo.length > 0
     }
     else {
         workTime.value = 0
