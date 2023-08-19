@@ -1,25 +1,27 @@
-# man-hour-calculator
+# Man-hour-calculator
+![](https://img.shields.io/badge/Vue.js-%5E3.3.4-brightgreen)
+![](https://img.shields.io/badge/Vite-%5E4.3.9-green)
+![](https://img.shields.io/badge/antdv-%5E4.0.0-blue)
+![](https://img.shields.io/badge/pinia-%5E2.1.3-orange)
+![](https://img.shields.io/badge/typescript-%7E5.0.4-9cf)
+![](https://img.shields.io/badge/license-MIT-yellow)
 
-This template should help get you started developing with Vue 3 in Vite.
+This is a project that help users record and calculate their man-hour of each month.
 
-## Recommended IDE Setup
+Access to this [Demo](https://shurintou.github.io/man-hour-caculator/).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Basic use
+Step1. To input the schedule work time for a certain month.
 
-## Type Support for `.vue` Imports in TS
+![](https://github.com/shurintou/man-hour-caculator/blob/master/docs/schedule_time_input.gif?raw=true)
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+Step2. To input the actual work time for each work day.
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+![](https://github.com/shurintou/man-hour-caculator/blob/master/docs/actual_time_input.gif?raw=true)
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Step3. To check the result report.
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+![](https://github.com/shurintou/man-hour-caculator/blob/master/docs/check_report.gif?raw=true)
 
 ## Project Setup
 
