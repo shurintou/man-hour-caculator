@@ -99,6 +99,7 @@ const dateStore = useDateStore()
 const editDate = () => {
     dateStore.$reset()
     modeStore.toggltEditDate()
+    if (modeStore.currentMode === 'editDate') isFormStateModified.value = false
 }
 const cancelEdit = async () => {
     fetchDateData()
