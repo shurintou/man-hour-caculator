@@ -84,9 +84,9 @@ const fetchData = async () => {
         const startDate = dayjs(date.startTime, 'HHmm')
         const endDate = dayjs(date.endTime, 'HHmm')
         const workTime = endDate.diff(startDate, "hour", true)
+        const scheduledWorkHours = (date.scheduledWorkHours || 0)
         const realWorkTime = (workTime || 0) - (date.restHours || 0)
-        const overtime = realWorkTime - (date.scheduledWorkHours || 0)
-        overtimeHours.value += overtime > 0 ? overtime : 0
+        if ((realWorkTime > 0 && scheduledWorkHours > 0)) overtimeHours.value += realWorkTime - scheduledWorkHours
         return acuumulator + realWorkTime
     }, 0)
 
