@@ -2,19 +2,24 @@
     <a-modal title="Time" centered :open="props.isModalVisible" @ok="submitHandler" @cancel="changeModalVisible(false)"
         okText="submit" :maskClosable="false">
         <a-form :model="formState" ref="formRef">
-            <a-form-item label="Scheduled work hours" :labelCol="labelColStyle" v-bind="validateInfos.scheduledWorkHours">
+            <a-form-item label="Scheduled work hours" :labelCol="labelColStyle" v-bind="validateInfos.scheduledWorkHours"
+                :validateStatus="scheduledWorkHoursValidateStatus"
+                :help="scheduledWorkHoursValidateStatus === 'warning' ? helpMessage : ''">
                 <a-input-number type="number" :style="inputStyle" v-model:value="formState.scheduledWorkHours"
                     :addon-after="timeInputAddonAfter" :step="timeInputStep" />
             </a-form-item>
-            <a-form-item label="Start time" :labelCol="labelColStyle" v-bind="validateInfos.startTime">
+            <a-form-item label="Start time" :labelCol="labelColStyle" v-bind="validateInfos.startTime"
+                :validateStatus="startTimeValidateStatus" :help="startTimeValidateStatus === 'warning' ? helpMessage : ''">
                 <a-time-picker v-model:value="formState.startTime" :valueFormat="timeValueFormat"
                     :format="timeDisplayFormat" :inputReadOnly="true" :minuteStep="timeMinuteStep" />
             </a-form-item>
-            <a-form-item label="End time" :labelCol="labelColStyle" v-bind="validateInfos.endTime">
+            <a-form-item label="End time" :labelCol="labelColStyle" v-bind="validateInfos.endTime"
+                :validateStatus="endTimeValidateStatus" :help="endTimeValidateStatus === 'warning' ? helpMessage : ''">
                 <a-time-picker v-model:value="formState.endTime" :valueFormat="timeValueFormat" :format="timeDisplayFormat"
                     :inputReadOnly="true" :minuteStep="timeMinuteStep" />
             </a-form-item>
-            <a-form-item label="Rest hours" :labelCol="labelColStyle" v-bind="validateInfos.restHours">
+            <a-form-item label="Rest hours" :labelCol="labelColStyle" v-bind="validateInfos.restHours"
+                :validateStatus="restHoursValidateStatus" :help="restHoursValidateStatus === 'warning' ? helpMessage : ''">
                 <a-input-number type="number" :style="inputStyle" v-model:value="formState.restHours"
                     :addon-after="timeInputAddonAfter" :step="timeInputStep" />
             </a-form-item>
@@ -34,12 +39,13 @@ import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 import { Form, message } from 'ant-design-vue'
 import { timeModalRuleRef, timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat } from '@/utils/rules'
+import type { ValidateStatus } from 'ant-design-vue/es/form/FormItem'
 
 const inputStyle = { width: '120px' }
 const labelColStyle = { lg: { offset: 2 } }
 const useForm = Form.useForm
 const formRef = ref()
-
+const helpMessage = 'Including different values.'
 
 const emit = defineEmits<{
     (e: 'changeTimeModalVisible', flg: boolean): void
@@ -52,26 +58,84 @@ const props = defineProps<{
 const dateStore = useDateStore()
 const modeStore = useModeStore()
 
+const scheduledWorkHoursValidateStatus = ref<ValidateStatus>("")
+const startTimeValidateStatus = ref<ValidateStatus>("")
+const endTimeValidateStatus = ref<ValidateStatus>("")
+const restHoursValidateStatus = ref<ValidateStatus>("")
+
 watch(() => props.isModalVisible, async (newVal) => {
     if (newVal === true) {
-        if (dateStore.$state.selectedDateList.length === 1) {
-            const dbHandler = await db
-            const dateKey = dateStore.$state.selectedDateList[0].format("YYYYMMDD")
+        let shouldCheckScheduledWorkHours = true
+        let shouldCheckStartTime = true
+        let shouldCheckEndTime = true
+        let shouldCheckRestHours = true
+        const dbHandler = await db
+        for (const selectedDate of dateStore.$state.selectedDateList) {
+            if (scheduledWorkHoursValidateStatus.value === "warning") shouldCheckScheduledWorkHours = false
+            if (startTimeValidateStatus.value === "warning") shouldCheckStartTime = false
+            if (endTimeValidateStatus.value === "warning") shouldCheckEndTime = false
+            if (restHoursValidateStatus.value === "warning") shouldCheckRestHours = false
+            if (shouldCheckScheduledWorkHours === false && shouldCheckStartTime === false && shouldCheckEndTime === false && shouldCheckRestHours === false) break
+            const dateKey = selectedDate.format("YYYYMMDD")
             const storedDateInfo = await dbHandler.get("dates", dateKey)
+            let scheduledWorkHours = undefined
+            let startTime = undefined
+            let endTime = undefined
+            let restHours = undefined
             if (storedDateInfo) {
-                const { startTime, endTime, scheduledWorkHours, restHours } = storedDateInfo
-                formState.startTime = startTime
-                formState.endTime = endTime
-                formState.scheduledWorkHours = scheduledWorkHours
-                formState.restHours = restHours
-                return
+                startTime = storedDateInfo.startTime
+                endTime = storedDateInfo.endTime
+                scheduledWorkHours = storedDateInfo.scheduledWorkHours
+                restHours = storedDateInfo.restHours
+            }
+            if (shouldCheckScheduledWorkHours) {
+                shouldCheckScheduledWorkHours = formState.scheduledWorkHours === undefined || formState.scheduledWorkHours === scheduledWorkHours
+                if (!shouldCheckScheduledWorkHours) {
+                    formState.scheduledWorkHours = undefined
+                    scheduledWorkHoursValidateStatus.value = "warning"
+                }
+                else {
+                    formState.scheduledWorkHours = scheduledWorkHours
+                }
+            }
+            if (shouldCheckStartTime) {
+                shouldCheckStartTime = formState.startTime === undefined || formState.startTime === startTime
+                if (!shouldCheckStartTime) {
+                    formState.startTime = undefined
+                    startTimeValidateStatus.value = "warning"
+                }
+                else {
+                    formState.startTime = startTime
+                }
+            }
+            if (shouldCheckEndTime) {
+                shouldCheckEndTime = formState.endTime === undefined || formState.endTime === endTime
+                if (!shouldCheckEndTime) {
+                    formState.endTime = undefined
+                    endTimeValidateStatus.value = "warning"
+                }
+                else {
+                    formState.endTime = endTime
+                }
+            }
+            if (shouldCheckRestHours) {
+                shouldCheckRestHours = formState.restHours === undefined || formState.restHours === restHours
+                if (!shouldCheckRestHours) {
+                    formState.restHours = undefined
+                    restHoursValidateStatus.value = "warning"
+                }
+                else {
+                    formState.restHours = restHours
+                }
             }
         }
+        return
     }
+    formState.scheduledWorkHours = undefined
     formState.startTime = undefined
     formState.endTime = undefined
-    formState.scheduledWorkHours = undefined
     formState.restHours = undefined
+    scheduledWorkHoursValidateStatus.value = startTimeValidateStatus.value = endTimeValidateStatus.value = restHoursValidateStatus.value = ""
 })
 
 const formState: UnwrapRef<TimeModalFormState> = reactive({
