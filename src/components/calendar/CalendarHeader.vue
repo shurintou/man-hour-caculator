@@ -5,7 +5,7 @@
                 <OperationBar :currentDate="currentDate"></OperationBar>
             </a-col>
             <a-col :xs="{ span: 24 }" :sm="{ span: 24 }" :md="{ span: 10 }" :lg="{ offset: 6, span: 6 }">
-                <a-space warp size="large">
+                <a-space warp size="large" align="center" style="margin-bottom: 5px;">
                     <a-space warp size="middle">
                         <a-button :disabled="modeStore.currentMode === 'editDate'" shape="circle"
                             :icon="h(DoubleLeftOutlined)" @click="addMonth(-12)" />
