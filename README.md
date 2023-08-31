@@ -8,7 +8,7 @@
 
 This is a project that help users record and calculate their man-hour of each month.
 
-Access to this [Demo](https://shurintou.github.io/man-hour-caculator/).
+Try the [Demo](https://shurintou.github.io/man-hour-caculator/).
 
 ## Basic use
 Step1. To input the schedule work time for a certain month.
