@@ -1,5 +1,6 @@
 <template>
-    <a-descriptions size="small" title="Scheduled" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
+    <a-descriptions :labelStyle="descriptionsLabelCommonStyle" size="small" title="Scheduled" bordered
+        :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
         <a-descriptions-item label="work days">{{ scheduledWorkDays }}</a-descriptions-item>
         <a-descriptions-item label="holidays">{{ scheduledHolidays }}</a-descriptions-item>
         <a-descriptions-item label="work hours">
@@ -12,7 +13,8 @@
         </a-descriptions-item>
     </a-descriptions>
     <br>
-    <a-descriptions size="small" title="Actual" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
+    <a-descriptions :labelStyle="descriptionsLabelCommonStyle" size="small" title="Actual" bordered
+        :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
         <a-descriptions-item label="work days">{{ realWorkDays }}</a-descriptions-item>
         <a-descriptions-item label="holidays">{{ realWorkHolidays }}</a-descriptions-item>
         <a-descriptions-item label="work hours">
@@ -43,6 +45,8 @@ const overManHourStatusColor = (workHours: number) => {
     }
     return 'green'
 }
+
+const descriptionsLabelCommonStyle = { width: '150px' }
 
 const scheduledWorkDays = ref<number>(0)
 const scheduledHolidays = ref<number>(0)
