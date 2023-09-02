@@ -1,6 +1,6 @@
 <template>
-    <a-descriptions :labelStyle="descriptionsLabelCommonStyle" size="small" title="Scheduled" bordered
-        :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
+    <a-descriptions :labelStyle="descriptionsLabelCommonStyle" :contentStyle="descriptionsContentCommonStyle" size="small"
+        title="Scheduled" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
         <a-descriptions-item label="work days">{{ scheduledWorkDays }}</a-descriptions-item>
         <a-descriptions-item label="holidays">{{ scheduledHolidays }}</a-descriptions-item>
         <a-descriptions-item label="work hours">
@@ -13,8 +13,8 @@
         </a-descriptions-item>
     </a-descriptions>
     <br>
-    <a-descriptions :labelStyle="descriptionsLabelCommonStyle" size="small" title="Actual" bordered
-        :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
+    <a-descriptions :labelStyle="descriptionsLabelCommonStyle" :contentStyle="descriptionsContentCommonStyle" size="small"
+        title="Actual" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
         <a-descriptions-item label="work days">{{ realWorkDays }}</a-descriptions-item>
         <a-descriptions-item label="holidays">{{ realWorkHolidays }}</a-descriptions-item>
         <a-descriptions-item label="work hours">
@@ -23,18 +23,44 @@
         </a-descriptions-item>
         <a-descriptions-item label="overtime hours">{{ displayOvertimeHours }} </a-descriptions-item>
     </a-descriptions>
+    <br>
+    <a-descriptions v-if="memos.length > 0" :labelStyle="memoDescriptionStyle" size="small" title="Memo" bordered
+        :column="1">
+        <a-descriptions-item v-for="{ date, memo } in memos" :label="date">{{ memo }}</a-descriptions-item>
+    </a-descriptions>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
+import { ref, inject, onMounted, watch, computed, onUnmounted } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 import { fixNumToStr } from '@/utils/common'
+import { gridTypeKey } from '@/types/inject'
+import { gridTypeRef } from '@/main'
 
 const props = defineProps<{
     currentDate: Dayjs,
 }>()
+
+const gridType = inject(gridTypeKey, gridTypeRef)
+const memoDescriptionStyle = computed(() => {
+    if (['xxl', 'xl', 'lg'].includes(gridType.value)) {
+        return { width: '12.5%' }
+    }
+    if (['md', 'sm'].includes(gridType.value)) {
+        return { width: '25%' }
+    }
+    return { width: '150px' }
+})
+
+const descriptionsLabelCommonStyle = { width: '150px' }
+const descriptionsContentCommonStyle = computed(() => {
+    if (['xxl', 'xl', 'lg', 'md', 'sm'].includes(gridType.value)) {
+        return { width: '150px' }
+    }
+    return {}
+})
 
 const overManHourStatusColor = (workHours: number) => {
     if (workHours > 180) {
@@ -46,8 +72,6 @@ const overManHourStatusColor = (workHours: number) => {
     return 'green'
 }
 
-const descriptionsLabelCommonStyle = { width: '150px' }
-
 const scheduledWorkDays = ref<number>(0)
 const scheduledHolidays = ref<number>(0)
 const scheduledWorkHours = ref<number>(0)
@@ -56,6 +80,7 @@ const realWorkDays = ref<number>(0)
 const realWorkHolidays = ref<number>(0)
 const realWorkHours = ref<number>(0)
 const overtimeHours = ref<number>(0)
+const memos = ref<({ date: string, memo: string })[]>([])
 
 const displayEstimatedWorkHours = computed(() => fixNumToStr(estimatedWorkHours.value))
 const displayRealWorkHours = computed(() => fixNumToStr(realWorkHours.value))
@@ -69,6 +94,7 @@ watch(() => props.currentDate, async (newDate, oldDate) => {
 
 const fetchData = async () => {
     scheduledWorkDays.value = scheduledHolidays.value = scheduledWorkHours.value = estimatedWorkHours.value = realWorkDays.value = realWorkHolidays.value = realWorkHours.value = overtimeHours.value = 0
+    memos.value = []
     const dbHandler = await db
     const rangeStart = props.currentDate.startOf('M').format("YYYYMMDD")
     const rangeEnd = props.currentDate.endOf('M').format("YYYYMMDD")
@@ -93,7 +119,11 @@ const fetchData = async () => {
         if ((realWorkTime > 0 && scheduledWorkHours > 0)) overtimeHours.value += realWorkTime - scheduledWorkHours
         return acuumulator + realWorkTime
     }, 0)
-
+    storedCurrentMonthDates.forEach(({ date, memo }) => {
+        if (memo) {
+            memos.value.push({ date: date, memo: memo })
+        }
+    })
 }
 
 onMounted(async () => {
