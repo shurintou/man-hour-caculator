@@ -24,8 +24,7 @@
         <a-descriptions-item label="overtime hours">{{ displayOvertimeHours }} </a-descriptions-item>
     </a-descriptions>
     <br>
-    <a-descriptions v-if="memos.length > 0" :labelStyle="memoDescriptionStyle" size="small" title="Memo" bordered
-        :column="1">
+    <a-descriptions :labelStyle="memoDescriptionStyle" size="small" title="Memo" :bordered="memos.length > 0" :column="1">
         <a-descriptions-item v-for="{ date, memo } in memos" :label="date">{{ memo }}</a-descriptions-item>
     </a-descriptions>
 </template>
