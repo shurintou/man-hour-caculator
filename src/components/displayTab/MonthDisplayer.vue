@@ -119,9 +119,7 @@ const fetchData = async () => {
         return acuumulator + realWorkTime
     }, 0)
     storedCurrentMonthDates.forEach(({ date, memo }) => {
-        if (memo) {
-            memos.value.push({ date: date, memo: memo })
-        }
+        if (memo) memos.value.push({ date: dayjs(date).format('MM-DD'), memo: memo })
     })
 }
 
