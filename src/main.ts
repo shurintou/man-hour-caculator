@@ -1,7 +1,7 @@
 
 import { createApp, ref, computed } from 'vue'
 import { createPinia } from 'pinia'
-import { Alert, Avatar, Badge, Button, Calendar, Checkbox, Col, DatePicker, Descriptions, Divider, Dropdown, Form, Input, InputNumber, Menu, Modal, Popconfirm, Row, Space, Tabs, TimePicker } from 'ant-design-vue'
+import { Alert, Avatar, Badge, Button, Calendar, Checkbox, Col, DatePicker, Descriptions, Divider, Dropdown, Form, Input, InputNumber, Menu, Modal, Popconfirm, Row, Space, Tabs, TimePicker, Typography } from 'ant-design-vue'
 import App from './App.vue'
 import { windowWidthKey, gridTypeKey, isPcModeKey, isSpModeKey } from '@/types/inject'
 import { windowWidthConstant } from '@/config/constants'
@@ -68,4 +68,5 @@ app.use(Row)
 app.use(Space)
 app.use(Tabs)
 app.use(TimePicker)
+app.use(Typography)
 app.mount('#app')

@@ -29,9 +29,15 @@
                     :addon-after="timeInputAddonAfter" :step="timeInputStep" />
                 <div v-else :style="inputStyle">{{ displayScheduledWorkHours }}</div>
             </a-descriptions-item>
-            <a-descriptions-item label="Actual work hours">{{ displayWorkTime }}</a-descriptions-item>
+            <a-descriptions-item label="Actual work hours">
+                <a-typography-text :disabled="isEditing">
+                    {{ displayWorkTime }}
+                </a-typography-text>
+            </a-descriptions-item>
             <a-descriptions-item label="Overtime hours">
-                {{ displayOvertimeHours }}
+                <a-typography-text :disabled="isEditing">
+                    {{ displayOvertimeHours }}
+                </a-typography-text>
             </a-descriptions-item>
             <a-descriptions-item label="Start time">
                 <a-time-picker v-if="isEditing" v-model:value="formState.startTime" :valueFormat="timeValueFormat"
