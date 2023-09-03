@@ -27,7 +27,7 @@
     <a-descriptions :labelStyle="memoDescriptionStyle" size="small" title="Memo" :bordered="memos.length > 0" :column="1">
         <a-descriptions-item v-for="{ date, memo } in memos" :label="date">
             <a-textarea :style="{ color: isPcMode ? 'rgba(0, 0, 0, 0.88)' : 'black', padding: '0px' }" disabled
-                :bordered="false" :auto-size="{ minRows: 2, maxRows: 10 }" :value="memo" placeholder="" />
+                :bordered="false" :auto-size="{ minRows: 1, maxRows: 5 }" :value="memo" placeholder="" />
         </a-descriptions-item>
     </a-descriptions>
     <br v-if="!isPcMode" />
