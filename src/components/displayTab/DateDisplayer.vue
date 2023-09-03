@@ -1,6 +1,7 @@
 <template>
     <a-form ref="formRef" :model="formState">
-        <a-descriptions size="small" bordered :column="{ xxl: 3, xl: 3, lg: 3, md: 1, sm: 1, xs: 1 }">
+        <a-descriptions :labelStyle="{ width: '180px' }" size="small" bordered
+            :column="{ xxl: 3, xl: 3, lg: 3, md: 1, sm: 1, xs: 1 }">
             <template #title>
                 <div class="date-displayer-holiday">{{ displayJapaneseHoliday }}</div>
             </template>
@@ -49,12 +50,13 @@
                     v-bind="validateInfos.restHours" :addon-after="timeInputAddonAfter" :step="timeInputStep" />
                 <div v-else :style="inputStyle"> {{ displayRestHours }} </div>
             </a-descriptions-item>
-            <a-descriptions-item label="Memo" :span="isPcMode ? 3 : 1" :style="textAreaStyle">
-                <a-textarea :style="textAreaStyle" v-if="isEditing" :auto-size="{ minRows: 2, maxRows: 5 }"
-                    v-model:value="formState.memo" placeholder="take down some memos" />
-                <div v-else :style="textAreaStyle">{{ displayMemo }}</div>
+            <a-descriptions-item label="Memo" :span="isPcMode ? 3 : 1">
+                <a-textarea :style="textAreaStyle" :disabled="!isEditing" :bordered="isEditing"
+                    :auto-size="{ minRows: 2, maxRows: 10 }" v-model:value="formState.memo"
+                    :placeholder="isEditing ? 'take down some memos' : ''" />
             </a-descriptions-item>
         </a-descriptions>
+        <br v-if="!isPcMode" />
     </a-form>
 </template>
 
@@ -108,7 +110,18 @@ const cancelEdit = async () => {
 }
 const isEditing = computed(() => modeStore.currentMode === 'editDate')
 const inputStyle = { width: '120px', height: '30px', lineHeight: '30px' }
-const textAreaStyle = computed(() => isPcMode.value === true ? { height: '54px' } : { minWidth: '46vw', height: '54px' }) // 54px height will keep the description label's position stable.
+const textAreaStyle = computed(() => {
+    if (isPcMode.value === true) {
+        if (isEditing.value === true) {
+            return { color: 'rgba(0, 0, 0, 0.88)' }
+        }
+        return { color: 'rgba(0, 0, 0, 0.88)', padding: '0px' }
+    }
+    if (isEditing.value === true) {
+        return { color: 'black' }
+    }
+    return { color: 'black', padding: '0px' }
+})
 
 const displayJapaneseHoliday = ref<string>("")
 const displayStartTime = ref<string>("")

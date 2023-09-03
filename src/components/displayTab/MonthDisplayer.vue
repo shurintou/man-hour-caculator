@@ -25,8 +25,12 @@
     </a-descriptions>
     <br>
     <a-descriptions :labelStyle="memoDescriptionStyle" size="small" title="Memo" :bordered="memos.length > 0" :column="1">
-        <a-descriptions-item v-for="{ date, memo } in memos" :label="date">{{ memo }}</a-descriptions-item>
+        <a-descriptions-item v-for="{ date, memo } in memos" :label="date">
+            <a-textarea :style="{ color: isPcMode ? 'rgba(0, 0, 0, 0.88)' : 'black', padding: '0px' }" disabled
+                :bordered="false" :auto-size="{ minRows: 2, maxRows: 10 }" :value="memo" placeholder="" />
+        </a-descriptions-item>
     </a-descriptions>
+    <br v-if="!isPcMode" />
 </template>
 
 <script lang="ts" setup>
@@ -35,14 +39,15 @@ import dayjs, { Dayjs } from 'dayjs'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 import { fixNumToStr } from '@/utils/common'
-import { gridTypeKey } from '@/types/inject'
-import { gridTypeRef } from '@/main'
+import { gridTypeKey, isPcModeKey } from '@/types/inject'
+import { gridTypeRef, isPcModeRef } from '@/main'
 
 const props = defineProps<{
     currentDate: Dayjs,
 }>()
 
 const gridType = inject(gridTypeKey, gridTypeRef)
+const isPcMode = inject(isPcModeKey, isPcModeRef)
 const memoDescriptionStyle = computed(() => {
     if (['xxl', 'xl', 'lg'].includes(gridType.value)) {
         return { width: '12.5%' }
