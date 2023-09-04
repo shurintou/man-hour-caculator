@@ -6,18 +6,9 @@
                 <div class="date-displayer-holiday">{{ displayJapaneseHoliday }}</div>
             </template>
             <template #extra>
-                <a-space v-if="isEditing" :size="isPcMode ? 'large' : 'middle'">
-                    <a-button type="primary" :icon="h(CheckOutlined)" @click="submitEditForm"
-                        :disabled="!isFormStateModified">
-                        <span v-if="isPcMode">Submit</span>
-                    </a-button>
-                    <a-popconfirm title="Are you sure cancel this edit?" ok-text="Yes" cancel-text="No"
-                        @confirm="cancelEdit" placement="left" :open="popconfirmVisible"
-                        @openChange="handlePopconfirmVisibleChange">
-                        <a-button type="primary" :icon="h(CloseCircleOutlined)" danger>
-                            <span v-if="isPcMode">Cancel</span>
-                        </a-button>
-                    </a-popconfirm>
+                <a-space v-if="isEditing">
+                    <OkCancelButton v-if="isEditing" :submitFunc="submitEditForm" :cancelFunc="cancelEdit"
+                        :isFormStateModified="isFormStateModified" />
                 </a-space>
                 <a-button v-else :icon="h(EditOutlined)" @click="editDate" :disabled="modeStore.currentMode !== 'normal'">
                     <span v-if="isPcMode">Edit</span>
@@ -67,11 +58,11 @@
 </template>
 
 <script lang="ts" setup>
-import { h, ref, reactive, computed, watch, onMounted, inject, onUnmounted, type UnwrapRef } from 'vue'
+import { h, ref, computed, watch, onMounted, inject, onUnmounted } from 'vue'
 import dayjs, { Dayjs } from 'dayjs'
 import { getJapenseHoliday } from '@/utils/holidays'
 import { timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat, timeModalRuleRef } from '@/utils/rules'
-import { EditOutlined, CloseCircleOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 import db from '@/utils/datebase'
 import type { EditFormState, DateTable } from '@/types/index'
 import { fixNumToStr } from '@/utils/common'
@@ -81,6 +72,8 @@ import { isPcModeRef } from '@/main'
 import { isPcModeKey } from '@/types/inject'
 import emitter from '@/utils/emitter'
 import { useDateStore } from '@/stores/date'
+import { useFormWatcher } from '@/utils/formWatcher'
+import OkCancelButton from '@/components/common/OkCancleButton.vue'
 const isPcMode = inject(isPcModeKey, isPcModeRef)
 
 const useForm = Form.useForm
@@ -90,19 +83,7 @@ const props = defineProps<{
     currentDate: Dayjs,
 }>()
 const modeStore = useModeStore()
-const popconfirmVisible = ref<boolean>(false)
-const handlePopconfirmVisibleChange = (open: boolean) => {
-    if (!open) {
-        popconfirmVisible.value = false
-        return
-    }
-    if (isFormStateModified.value) {
-        popconfirmVisible.value = true
-    }
-    else {
-        cancelEdit()
-    }
-}
+
 const dateStore = useDateStore()
 const editDate = () => {
     dateStore.$reset()
@@ -112,9 +93,8 @@ const editDate = () => {
 const cancelEdit = async () => {
     fetchDateData()
     editDate()
-    isFormStateModified.value = popconfirmVisible.value = false
+    isFormStateModified.value = false
 }
-const isEditing = computed(() => modeStore.currentMode === 'editDate')
 const inputStyle = { width: '120px', height: '30px', lineHeight: '30px' }
 const textAreaStyle = computed(() => {
     if (isPcMode.value === true) {
@@ -138,15 +118,14 @@ const displayOvertimeHours = ref<string>("")
 const displayMemo = ref<string>("")
 const displayScheduledWorkHours = ref<string>("")
 
-const formState: UnwrapRef<EditFormState> = reactive({
-    startTime: undefined,
-    endTime: undefined,
-    scheduledWorkHours: undefined,
-    restHours: undefined,
-    memo: undefined,
-})
-const isFormStateModified = ref<boolean>(false)
-watch(formState, () => { if (isEditing.value === true) isFormStateModified.value = true })
+const { formState, isEditing, isFormStateModified } = useFormWatcher('editDate',
+    {
+        startTime: undefined,
+        endTime: undefined,
+        scheduledWorkHours: undefined,
+        restHours: undefined,
+        memo: undefined,
+    } as EditFormState)
 const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
 

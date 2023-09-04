@@ -18,3 +18,5 @@ interface CommonDateProp {
 interface CommonEditProp {
     memo: string | undefined
 }
+
+export type mode = 'normal' | 'selectDate' | 'editDate' | 'editTime'

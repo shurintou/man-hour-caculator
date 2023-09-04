@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
+import { type mode } from '@/types/index'
 
 export const useModeStore = defineStore('mode', {
     state: () => {
         return {
-            currentMode: 'normal' as 'normal' | 'selectDate' | 'editDate' | 'editTime'
+            currentMode: 'normal' as mode
         }
     },
     actions: {

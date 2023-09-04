@@ -1,6 +1,10 @@
 <template>
     <a-modal title="Time" centered :open="props.isModalVisible" @ok="submitHandler" @cancel="changeModalVisible(false)"
         okText="submit" :maskClosable="false">
+        <template #footer>
+            <OkCancelButton :submitFunc="submitHandler" :cancelFunc="cancelHandler"
+                :isFormStateModified="isFormStateModified" />
+        </template>
         <a-form :model="formState" ref="formRef">
             <a-form-item label="Scheduled work hours" :labelCol="labelColStyle" v-bind="validateInfos.scheduledWorkHours"
                 :validateStatus="scheduledWorkHoursValidateStatus"
@@ -31,16 +35,17 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, watch, ref } from 'vue'
+import { watch, ref } from 'vue'
 import { useDateStore } from '@/stores/date'
 import { useModeStore } from '@/stores/mode'
-import type { UnwrapRef } from 'vue'
 import type { TimeModalFormState, DateTable } from '@/types/index'
 import emitter from '@/utils/emitter'
 import db from '@/utils/datebase'
 import { Form, message } from 'ant-design-vue'
 import { timeModalRuleRef, timeInputAddonAfter, timeInputStep, timeMinuteStep, timeDisplayFormat, timeValueFormat } from '@/utils/rules'
 import type { ValidateStatus } from 'ant-design-vue/es/form/FormItem'
+import { useFormWatcher } from '@/utils/formWatcher'
+import OkCancelButton from '@/components/common/OkCancleButton.vue'
 
 const inputStyle = { width: '120px' }
 const labelColStyle = { lg: { offset: 2 } }
@@ -66,6 +71,7 @@ const restHoursValidateStatus = ref<ValidateStatus>("")
 
 watch(() => props.isModalVisible, async (newVal) => {
     if (newVal === true) {
+        modeStore.currentMode = 'editTime'
         let shouldCheckScheduledWorkHours = true
         let shouldCheckStartTime = true
         let shouldCheckEndTime = true
@@ -130,8 +136,10 @@ watch(() => props.isModalVisible, async (newVal) => {
                 }
             }
         }
+        isFormStateModified.value = false
         return
     }
+    modeStore.initialize()
     formState.scheduledWorkHours = undefined
     formState.startTime = undefined
     formState.endTime = undefined
@@ -139,15 +147,19 @@ watch(() => props.isModalVisible, async (newVal) => {
     scheduledWorkHoursValidateStatus.value = startTimeValidateStatus.value = endTimeValidateStatus.value = restHoursValidateStatus.value = ""
 })
 
-const formState: UnwrapRef<TimeModalFormState> = reactive({
-    startTime: undefined,
-    endTime: undefined,
-    scheduledWorkHours: undefined,
-    restHours: undefined,
-})
+const { formState, isEditing, isFormStateModified } = useFormWatcher('editTime',
+    {
+        startTime: undefined,
+        endTime: undefined,
+        scheduledWorkHours: undefined,
+        restHours: undefined,
+    } as TimeModalFormState)
 
 const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
+const cancelHandler = () => {
+    changeModalVisible(false)
+}
 
 const changeModalVisible = (flg: boolean) => {
     emit("changeTimeModalVisible", flg)
