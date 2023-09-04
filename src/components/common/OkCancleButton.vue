@@ -33,12 +33,12 @@ const handlePopconfirmVisibleChange = (open: boolean) => {
 <template>
     <a-space :size="isPcMode ? 'large' : 'middle'">
         <a-button type="primary" :icon="h(CheckOutlined)" @click="props.submitFunc" :disabled="!props.isFormStateModified">
-            <span v-if="isPcMode">Submit</span>
+            <span>Submit</span>
         </a-button>
         <a-popconfirm title="Are you sure cancel this edit?" ok-text="Yes" cancel-text="No" @confirm="props.cancelFunc"
             placement="left" :open="popconfirmVisible" @openChange="handlePopconfirmVisibleChange">
             <a-button type="primary" :icon="h(CloseCircleOutlined)" danger>
-                <span v-if="isPcMode">Cancel</span>
+                <span>Cancel</span>
             </a-button>
         </a-popconfirm>
     </a-space>
