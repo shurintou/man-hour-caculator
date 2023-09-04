@@ -114,13 +114,19 @@ const fetchData = async () => {
         const realWorkTime = endDate.diff(startDate, "hour", true)
         return acuumulator + ((realWorkTime - (date.restHours || 0)) || date.scheduledWorkHours || 0)
     }, 0)
-    realWorkHours.value = storedCurrentMonthDates.reduce((acuumulator, date) => {
-        const startDate = dayjs(date.startTime, 'HHmm')
-        const endDate = dayjs(date.endTime, 'HHmm')
-        const workTime = endDate.diff(startDate, "hour", true)
-        const scheduledWorkHours = (date.scheduledWorkHours || 0)
-        const realWorkTime = (workTime || 0) - (date.restHours || 0)
-        if ((realWorkTime > 0 && scheduledWorkHours > 0)) overtimeHours.value += realWorkTime - scheduledWorkHours
+    realWorkHours.value = storedCurrentMonthDates.reduce((acuumulator, { scheduledWorkHours, startTime, endTime, restHours }) => {
+        let workTime: number | undefined = undefined
+        if (startTime && endTime) {
+            const startDate = dayjs(startTime, 'HHmm')
+            const endDate = dayjs(endTime, 'HHmm')
+            workTime = endDate.diff(startDate, "hour", true)
+        }
+        let realWorkTime = 0
+        if (workTime) {
+            realWorkTime = (workTime) - (restHours || 0)
+        }
+        const correctScheduledWorkHours = (scheduledWorkHours || 0)
+        if ((realWorkTime > 0 && correctScheduledWorkHours > 0)) overtimeHours.value += realWorkTime - correctScheduledWorkHours
         return acuumulator + realWorkTime
     }, 0)
     storedCurrentMonthDates.forEach(({ date, memo }) => {
