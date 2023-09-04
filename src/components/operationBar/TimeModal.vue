@@ -28,8 +28,8 @@
                     :addon-after="timeInputAddonAfter" :step="timeInputStep" />
             </a-form-item>
         </a-form>
-        <a-alert message="The empty item won't update any date's data." type="info" show-icon style="margin-bottom: 7px;" />
-        <a-alert v-if="dateStore.selectedDateList.length > 1" message="You are going to update multiple dates' data."
+        <a-alert message="The empty item won't affect any dates." type="info" show-icon style="margin-bottom: 7px;" />
+        <a-alert v-if="dateStore.selectedDateList.length > 1" message="The filled item will update all selected dates."
             type="warning" show-icon />
     </a-modal>
 </template>
