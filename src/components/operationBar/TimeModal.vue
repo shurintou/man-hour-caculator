@@ -205,13 +205,14 @@ const submitHandler = async (e: Event) => {
             message.success('update succeeded!')
             formRef.value.resetFields()
             emitter.emit("timeModalUpdated")
+            isFormStateModified.value = false
+            changeModalVisible(false)
         }
         catch (e: any) {
             console.error(e)
             message.error(e.message)
             transaction.abort()
         }
-        changeModalVisible(false)
     }
 }
 </script>
