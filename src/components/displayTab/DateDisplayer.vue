@@ -118,14 +118,14 @@ const displayOvertimeHours = ref<string>("")
 const displayMemo = ref<string>("")
 const displayScheduledWorkHours = ref<string>("")
 
-const { formState, isEditing, isFormStateModified } = useFormWatcher('editDate',
-    {
-        startTime: undefined,
-        endTime: undefined,
-        scheduledWorkHours: undefined,
-        restHours: undefined,
-        memo: undefined,
-    } as EditFormState)
+const formStateObj: EditFormState = {
+    startTime: undefined,
+    endTime: undefined,
+    scheduledWorkHours: undefined,
+    restHours: undefined,
+    memo: undefined,
+}
+const { formState, isEditing, isFormStateModified } = useFormWatcher('editDate', formStateObj)
 const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
 

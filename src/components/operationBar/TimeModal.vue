@@ -147,13 +147,13 @@ watch(() => props.isModalVisible, async (newVal) => {
     scheduledWorkHoursValidateStatus.value = startTimeValidateStatus.value = endTimeValidateStatus.value = restHoursValidateStatus.value = ""
 })
 
-const { formState, isEditing, isFormStateModified } = useFormWatcher('editTime',
-    {
-        startTime: undefined,
-        endTime: undefined,
-        scheduledWorkHours: undefined,
-        restHours: undefined,
-    } as TimeModalFormState)
+const formStateObj: TimeModalFormState = {
+    startTime: undefined,
+    endTime: undefined,
+    scheduledWorkHours: undefined,
+    restHours: undefined,
+}
+const { formState, isFormStateModified } = useFormWatcher('editTime', formStateObj)
 
 const { validate, validateInfos } = useForm(formState, timeModalRuleRef)
 
