@@ -1,6 +1,6 @@
 <template>
     <a-modal title="Time" centered :open="props.isModalVisible" @ok="submitHandler" @cancel="changeModalVisible(false)"
-        okText="submit" :maskClosable="false">
+        okText="submit" :maskClosable="false" :closable="false">
         <template #footer>
             <OkCancelButton :submitFunc="submitHandler" :cancelFunc="cancelHandler"
                 :isFormStateModified="isFormStateModified" />
