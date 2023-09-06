@@ -1,13 +1,13 @@
 <template>
     <a-descriptions :labelStyle="descriptionsLabelCommonStyle" :contentStyle="descriptionsContentCommonStyle" size="small"
         title="Scheduled" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
-        <a-descriptions-item label="work days">{{ scheduledWorkDays }}</a-descriptions-item>
-        <a-descriptions-item label="holidays">{{ scheduledHolidays }}</a-descriptions-item>
-        <a-descriptions-item label="work hours">
+        <a-descriptions-item label="Work days">{{ scheduledWorkDays }}</a-descriptions-item>
+        <a-descriptions-item label="Holidays">{{ scheduledHolidays }}</a-descriptions-item>
+        <a-descriptions-item label="Work hours">
             <span v-if="scheduledWorkHours === 0">{{ scheduledWorkHours }}</span>
             <a-badge v-else :color="overManHourStatusColor(scheduledWorkHours)" :text="scheduledWorkHours" />
         </a-descriptions-item>
-        <a-descriptions-item label="estimated hours">
+        <a-descriptions-item label="Estimated hours">
             <span v-if="estimatedWorkHours === 0">{{ displayEstimatedWorkHours }}</span>
             <a-badge v-else :color="overManHourStatusColor(estimatedWorkHours)" :text="displayEstimatedWorkHours" />
         </a-descriptions-item>
@@ -15,13 +15,13 @@
     <br>
     <a-descriptions :labelStyle="descriptionsLabelCommonStyle" :contentStyle="descriptionsContentCommonStyle" size="small"
         title="Actual" bordered :column="{ xxl: 4, xl: 4, lg: 4, md: 2, sm: 2, xs: 1 }">
-        <a-descriptions-item label="work days">{{ realWorkDays }}</a-descriptions-item>
-        <a-descriptions-item label="holidays">{{ realWorkHolidays }}</a-descriptions-item>
-        <a-descriptions-item label="work hours">
+        <a-descriptions-item label="Work days">{{ realWorkDays }}</a-descriptions-item>
+        <a-descriptions-item label="Holidays">{{ realWorkHolidays }}</a-descriptions-item>
+        <a-descriptions-item label="Work hours">
             <span v-if="realWorkHours === 0">{{ displayRealWorkHours }}</span>
             <a-badge v-else :color="overManHourStatusColor(realWorkHours)" :text="displayRealWorkHours" />
         </a-descriptions-item>
-        <a-descriptions-item label="overtime hours">{{ displayOvertimeHours }} </a-descriptions-item>
+        <a-descriptions-item label="Overtime hours">{{ displayOvertimeHours }} </a-descriptions-item>
     </a-descriptions>
     <br>
     <a-descriptions :labelStyle="memoDescriptionStyle" size="small" title="Memo" :bordered="memos.length > 0" :column="1">
