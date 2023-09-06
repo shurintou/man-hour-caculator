@@ -175,7 +175,7 @@ const fetchDateData = async () => {
             const realWorkTime = endDate.diff(startDate, "hour", true)
             displayWorkTime.value = fixNumToStr(realWorkTime - (restHours || 0))
             const overtimeHours = realWorkTime - (restHours || 0) - (scheduledWorkHours || 0)
-            if (overtimeHours > 0) displayOvertimeHours.value = fixNumToStr(overtimeHours)
+            if (overtimeHours >= 0) displayOvertimeHours.value = fixNumToStr(overtimeHours)
         }
         displayScheduledWorkHours.value = scheduledWorkHours?.toString() || ""
         displayMemo.value = memo || ''
