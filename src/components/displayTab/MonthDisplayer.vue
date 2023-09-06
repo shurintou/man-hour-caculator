@@ -126,7 +126,10 @@ const fetchData = async () => {
             realWorkTime = (workTime) - (restHours || 0)
         }
         const correctScheduledWorkHours = (scheduledWorkHours || 0)
-        if ((realWorkTime > 0 && correctScheduledWorkHours > 0)) overtimeHours.value += realWorkTime - correctScheduledWorkHours
+        if ((realWorkTime > 0 && correctScheduledWorkHours > 0)) {
+            const overtimeHour = realWorkTime - correctScheduledWorkHours
+            overtimeHours.value += overtimeHour > 0 ? overtimeHour : 0
+        }
         return acuumulator + realWorkTime
     }, 0)
     storedCurrentMonthDates.forEach(({ date, memo }) => {
