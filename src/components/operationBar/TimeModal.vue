@@ -70,6 +70,7 @@ const restHoursValidateStatus = ref<ValidateStatus>("")
 
 watch(() => props.isModalVisible, async (newVal) => {
     if (newVal === true) {
+        isFormStateModified.value = false
         modeStore.currentMode = 'editTime'
         let shouldCheckScheduledWorkHours = true
         let shouldCheckStartTime = true
