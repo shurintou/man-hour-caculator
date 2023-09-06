@@ -141,7 +141,7 @@ watch(() => props.isModalVisible, async (newVal) => {
     }
     modeStore.initialize()
     if (dateStore.$state.selectedDateList.length > 0) {
-        modeStore.currentMode = 'editTime'
+        modeStore.currentMode = 'selectDate'
     }
     formState.scheduledWorkHours = undefined
     formState.startTime = undefined
