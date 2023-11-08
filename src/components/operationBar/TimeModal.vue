@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import { watch, ref } from 'vue'
+import { watch, ref, nextTick } from 'vue'
 import { useDateStore } from '@/stores/date'
 import { useModeStore } from '@/stores/mode'
 import type { TimeModalFormState, DateTable } from '@/types/index'
@@ -136,6 +136,7 @@ watch(() => props.isModalVisible, async (newVal) => {
                 }
             }
         }
+        await nextTick()
         isFormStateModified.value = false
         return
     }
