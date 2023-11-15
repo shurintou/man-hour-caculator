@@ -67,9 +67,11 @@ const scheduledWorkHoursValidateStatus = ref<ValidateStatus>("")
 const startTimeValidateStatus = ref<ValidateStatus>("")
 const endTimeValidateStatus = ref<ValidateStatus>("")
 const restHoursValidateStatus = ref<ValidateStatus>("")
+const modeBeforeModalOpen = ref(modeStore.currentMode)
 
 watch(() => props.isModalVisible, async (newVal) => {
     if (newVal === true) {
+        modeBeforeModalOpen.value = modeStore.currentMode
         isFormStateModified.value = false
         modeStore.currentMode = 'editTime'
         let shouldCheckScheduledWorkHours = true
@@ -140,10 +142,7 @@ watch(() => props.isModalVisible, async (newVal) => {
         isFormStateModified.value = false
         return
     }
-    modeStore.initialize()
-    if (dateStore.$state.selectedDateList.length > 0) {
-        modeStore.currentMode = 'selectDate'
-    }
+    modeStore.currentMode = modeBeforeModalOpen.value
     formState.scheduledWorkHours = undefined
     formState.startTime = undefined
     formState.endTime = undefined
