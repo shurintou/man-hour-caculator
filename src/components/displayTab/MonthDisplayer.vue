@@ -25,8 +25,9 @@
     </a-descriptions>
     <br>
     <a-descriptions :labelStyle="memoDescriptionStyle" size="small" title="Memo" :bordered="memos.length > 0" :column="1">
-        <a-descriptions-item v-for="{ date, memo } in memos" :label="date">
-            <a-textarea :style="{ color: isPcMode ? 'rgba(0, 0, 0, 0.88)' : 'black', padding: '0px' }" disabled
+        <a-descriptions-item v-for="{ id, date, memo, isBefore, isToday } in memos" :key="id" :label="date"
+        :contentStyle="{backgroundColor: getMemoDescriptionItemBackgroundColor(isBefore, isToday) }">
+            <a-textarea :style="{ color: !isToday && isBefore ? 'gray' : 'black', padding: '0px' }" disabled
                 :bordered="false" :auto-size="{ minRows: 1, maxRows: 5 }" :value="memo" placeholder="" />
         </a-descriptions-item>
     </a-descriptions>
@@ -76,6 +77,16 @@ const overManHourStatusColor = (workHours: number) => {
     return 'green'
 }
 
+const getMemoDescriptionItemBackgroundColor = (isBefore: boolean, isToday: boolean) : string => {
+    if (isToday) {
+        return '#e6f4ff'
+    }
+    else if (isBefore) {
+        return '#f2f4f7'
+    }
+    return ''
+}
+
 const scheduledWorkDays = ref<number>(0)
 const scheduledHolidays = ref<number>(0)
 const scheduledWorkHours = ref<number>(0)
@@ -84,7 +95,7 @@ const realWorkDays = ref<number>(0)
 const realWorkHolidays = ref<number>(0)
 const realWorkHours = ref<number>(0)
 const overtimeHours = ref<number>(0)
-const memos = ref<({ date: string, memo: string })[]>([])
+const memos = ref<({ id: string, date: string, memo: string, isBefore: boolean, isToday: boolean })[]>([])
 
 const displayEstimatedWorkHours = computed(() => fixNumToStr(estimatedWorkHours.value))
 const displayRealWorkHours = computed(() => fixNumToStr(realWorkHours.value))
@@ -133,7 +144,13 @@ const fetchData = async () => {
         return acuumulator + realWorkTime
     }, 0)
     storedCurrentMonthDates.forEach(({ date, memo }) => {
-        if (memo) memos.value.push({ date: dayjs(date).format('MM-DD'), memo: memo })
+        if (memo){
+            const dateObj = dayjs(date)
+            const todayObj = dayjs(new Date())
+            const isToday = dateObj.isSame(todayObj,'date')
+            const isBefore = dateObj.isBefore(todayObj)
+            memos.value.push({ id: dateObj.format('YYYY-MM-DD'), date: dateObj.format('MM-DD'), memo: memo, isBefore: isBefore, isToday: isToday })
+        }
     })
 }
 
