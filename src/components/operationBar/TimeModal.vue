@@ -204,12 +204,13 @@ const submitHandler = async (e: Event) => {
             }
             await transaction.done
             dateStore.$reset()
-            modeStore.initialize()
             message.success('update succeeded!')
             formRef.value.resetFields()
             emitter.emit("timeModalUpdated")
             isFormStateModified.value = false
             changeModalVisible(false)
+            await nextTick()
+            modeStore.initialize()
         }
         catch (e: any) {
             console.error(e)
